@@ -39,6 +39,7 @@ export default class Trenu extends Component {
 
     this.state = {
       nodes,
+      root,
       active: root
     }
   }
@@ -90,6 +91,8 @@ export default class Trenu extends Component {
             scaling={this.props.scaling}
             span={100}
             active={this.state.active} 
+            root={this.state.root}
+            size={this.props.size}
           />
         </Canvas>
       </div>
