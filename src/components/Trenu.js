@@ -7,12 +7,15 @@ export default class Trenu extends Component {
     super(props);
 
     //generate data structure to work with (BFS)
-    let root = {userData: props.root, parent: null, children: [], span: 100, opacity: 1};
+    let root = {userData: props.root, parent: null, children: [], expanded: true, visible: true, height: 0};
     let nodes = [root];
     let queue = [];
+    let maxHeight = 0;
+    
     root.userData.children.forEach(child => {
-      queue.push({userData: child, parent: root, children: [], span: 0, opacity: 1});
+      queue.push({userData: child, parent: root, children: [], expanded: false, visible: true, height: 1});
       root.children.push(queue[queue.length-1]);
+      maxHeight = 1;
     });
     
     while (queue.length) {
@@ -21,13 +24,19 @@ export default class Trenu extends Component {
       if (node.userData.children) {
         node.userData.children.forEach((child) => {
           if (queue.indexOf(child) === -1) {
-            queue.push({userData: child, parent: node, children: [], span: 0, opacity: 1});
+            queue.push({userData: child, parent: node, children: [], expanded: false, visible: false, height: node.height + 1});
             node.children.push(queue[queue.length-1]);
+            if (node.height + 1 > maxHeight) maxHeight = node.height + 1;
           }
         });
       }
     }
     
+    //depth -> height
+    nodes.forEach((value, index, array) => {
+      array[index].height = maxHeight - array[index].height;
+    });
+
     this.state = {
       nodes,
       active: root
@@ -36,40 +45,38 @@ export default class Trenu extends Component {
 
 
   handleClick = (node, e) => {
-		e.stopPropagation();
-
-		this.state.active.children.forEach((value, index, array) => {	
-			if (array[index] != node) array[index].opacity = 0;
-    });
-    if (this.state.active != node)
-		  this.state.active.opacity = 0; 
-
-    if (node.span == 0) {
-      node.span = 100;
+    if (node !== this.state.active) {
+      //go deeper
+      //hide all visible nodes except the pressed one
+      this.state.active.children.forEach((value, index, array) => {	
+        if (array[index] !== node) array[index].visible = false;
+      });
+      if (this.state.active !== node)
+        this.state.active.visible = false; 
+      
+      node.expanded = true;
       node.children.forEach((value, index, array) => {
-        array[index].opacity = 1;
+        array[index].visible = true;
       });
 
       this.setState({
         nodes: this.state.nodes,
         active: node
       })
-    } else {
-      node.span = 0;
-
-      if (node.parent) {
-        node.parent.opacity = 1;
-        node.parent.children.forEach((value, index, array) => {
-          array[index].opacity = 1;
-        });
-      }
+      
+    } else if (node.parent) {
+      //go higher
+      node.expanded = false;
+      node.parent.visible = true;
+      node.parent.children.forEach((value, index, array) => {
+        array[index].visible = true;
+      });
 
       this.setState({
         nodes: this.state.nodes,
-        active: node.parent || node
+        active: node.parent
       })
     }
-	
   }
 
 
@@ -77,7 +84,13 @@ export default class Trenu extends Component {
     return (
       <div style={{...this.props.style, overflow: `hidden`}}>
         <Canvas>
-          <Node data={this.state.nodes[0]} onClick={this.handleClick} />
+          <Node
+            onClick={this.handleClick}
+            data={this.state.nodes[0]}
+            scaling={this.props.scaling}
+            span={100}
+            active={this.state.active} 
+          />
         </Canvas>
       </div>
     )

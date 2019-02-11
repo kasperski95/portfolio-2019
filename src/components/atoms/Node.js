@@ -1,46 +1,93 @@
 import React, { Component } from 'react'
+import { Motion, spring } from 'react-motion'
 
 export default class Node extends Component {
+  
   render() {
+    let hiddenNodes = [];
+    let tmp = this.props.active.parent;
+    while (tmp) {
+      hiddenNodes.push(tmp);
+      tmp = tmp.parent;
+    }
+    
+    const deadzone = 36;
     const offset = this.props.offset || 0;
-    const span = this.props.data.span || 0;
+    const span = this.props.data.expanded? this.props.span : 0;
     const angle = this.props.angle || 0;
-    const data = span? (this.props.data.children || []) : [];
-    let angleDelta = 0;
-    if (this.props.data.children)
-      angleDelta = 2 * Math.PI / this.props.data.children.length;
+    const angleDelta = this.props.data.children? 2 * Math.PI / this.props.data.children.length : 0;
+    const nodeOpacity = (!this.props.data.visible && hiddenNodes.indexOf(this.props.data) !== -1)? 0 : 1;
+    const subtreeOpacity = (!this.props.data.visible && hiddenNodes.indexOf(this.props.data) === -1 && hiddenNodes.indexOf(this.props.data.parent) !== -1)? 0 : 1;
+    const lineOpacity = this.props.data.visible && this.props.data != this.props.active? 1 : 0;
 
     return (
-      <div style={{...bigWrapper,
-        top: `${Math.cos(angle) * offset}px`,
-        left: `${Math.sin(angle) * offset}px`,
-        backgroundColor: `blue`
-        }}
-        >
+      <Motion style={{nodeOpacity: spring(nodeOpacity), span: spring(span), subtreeOpacity: spring(subtreeOpacity), lineOpacity: spring(lineOpacity)}}>{interpolated => {
+        const data = interpolated.span? (this.props.data.children || []) : [];
+        const disabled = (0 < interpolated.span && interpolated.span < deadzone)? true : false;
 
-        <div style={{...miniWrapper}}>
 
-          <div style={{...nodeStyle, opacity: `${this.props.data.opacity}`}}
-            onClick={(e) => {this.props.onClick(this.props.data, e)}}
-          ></div>
 
-          {data.map((value, index, array) => {
-            return (<Node key={index} data={array[index]} onClick={this.props.onClick} offset={span} angle={angleDelta * index}/>);
-          })}
+        return (
+          <React.Fragment>
+             {/* THE LINE */}
+             <div style={{
+                  position: `absolute`,
+                  top: `0px`,
+                  left: `0px`,
+                  width: `2px`,
+                  backgroundColor: `black`,
+                  height: `${Math.max(offset - deadzone * (1 + this.props.scaling), 0)}px`,
+                  transformOrigin: `-50% 0%`,
+                  transform: `rotate(${-angle}rad) translate(0px, ${deadzone}px)`,
+                  zIndex: `50`,
+                  opacity: `${interpolated.lineOpacity}`
+                }}>
+                </div>
 
-        </div>
+            <div style={{...bigWrapper,
+              top: `${Math.cos(angle) * offset}px`,
+              left: `${Math.sin(angle) * offset}px`,
+              transform: `translate(-50%, -50%) scale(${this.props.scaling})`,
+              opacity: `${interpolated.subtreeOpacity}`
+              }}
+              >
+              <div style={{...miniWrapper}}>
+                
 
-      </div>
+
+                {/* RECURENCE */}
+                {data.map((value, index, array) => {
+                  return (
+                    <Node key={index}
+                      data={array[index]}
+                      onClick={this.props.onClick}
+                      offset={interpolated.span}
+                      angle={angleDelta * index}
+                      disabled={disabled}
+                      scaling={this.props.scaling}
+                      span={this.props.span}
+                      active={this.props.active}
+                    />);
+                })}
+
+                {/* THE NODE */}
+                <div style={{...nodeStyle, transform: `translate(-50%, -50%) scale(${1/this.props.scaling})`, opacity: `${interpolated.nodeOpacity}`}}
+                  onClick={(e) => {if(!this.props.disabled && this.props.data.visible) this.props.onClick(this.props.data, e)}}
+                ></div>
+              </div>
+            </div>
+          </React.Fragment>
+      )}}</Motion>
     )
   }
 }
 
 
 const bigWrapper = {
-  width: `2em`,
-  height: `2em`,
+  width: `3em`,
+  height: `3em`,
   position: `absolute`,
-  transform: `translate(-50%, -50%)`
+  zIndex: `100`
 }
 
 // reference point for children
@@ -56,5 +103,8 @@ const nodeStyle = {
   height: `100%`,
   backgroundColor: `red`,
   borderRadius: `50%`,
-  transform: `translate(-50%, -50%)`
+  position: `absolute`,
+  top: `0`,
+  left: `0`,
+  zIndex: `100`
 }

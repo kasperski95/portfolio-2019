@@ -22,6 +22,7 @@ class App extends Component {
         <Trenu 
           style={{width: `500px`, height: `500px`, backgroundColor: `#EEE`}}
           root={this.state.root}
+          scaling={0.75}
         />
       </div>
     );
