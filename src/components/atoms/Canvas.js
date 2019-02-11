@@ -13,8 +13,9 @@ export default class Canvas extends Component {
 
 const canvasStyle = {
   position: `relative`,
-  width: `0px`,
-  height: `0px`,
+  width: `5px`,
+  height: `5px`,
   marginTop: `50%`,
   marginLeft: `50%`,
+  backgroundColor: `green`
 }
