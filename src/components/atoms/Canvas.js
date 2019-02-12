@@ -9,13 +9,13 @@ export default class Canvas extends Component {
     let x = 0;
     let y = 0;
 
-
+    // find out where is active node relative to canvas
     if(focused.ref.current) {
-      let tmp = focused;
-      while(tmp) {
-        x -= (tmp.ref.current.offsetLeft * scaling**tmp.depth);    
-        y -= (tmp.ref.current.offsetTop * scaling**tmp.depth);
-        tmp = tmp.parent;
+      let node = focused;
+      while(node) {
+        x -= (node.ref.current.parentNode.parentNode.offsetLeft * scaling**node.depth);    
+        y -= (node.ref.current.parentNode.parentNode.offsetTop * scaling**node.depth);
+        node = node.parent;
       }
     }
 
@@ -31,11 +31,9 @@ export default class Canvas extends Component {
   }
 }
 
+
 const canvasStyle = {
   position: `relative`,
   width: `0px`,
-  height: `0px`,
-  marginTop: `50%`,
-  marginLeft: `50%`,
-  backgroundColor: `green`
+  height: `0px`
 }

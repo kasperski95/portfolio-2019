@@ -6,14 +6,25 @@ export default class Trenu extends Component {
   constructor(props) {
     super(props);
 
+    const nodeObject = {
+      userData: null,
+      parent: null,
+      children: [],
+      expanded: false,
+      visible: false,
+      depth: -1,
+      height: -1,
+      ref: null
+    }
+
     //generate data structure to work with (BFS)
-    let root = {userData: props.root, parent: null, children: [], expanded: true, visible: true, depth: 0, height: -1, ref: React.createRef()};
+    let root = {...nodeObject, userData: props.root, children: [], expanded: true, visible: true, depth: 0, ref: React.createRef()};
     let nodes = [root];
     let queue = [];
     let maxHeight = 0;
     
     root.userData.children.forEach(child => {
-      queue.push({userData: child, parent: root, children: [], expanded: false, visible: true, depth: 1, height: -1, ref: React.createRef()});
+      queue.push({...nodeObject, userData: child, children: [], parent: root, visible: true, depth: 1, ref: React.createRef()});
       root.children.push(queue[queue.length-1]);
       maxHeight = 1;
     });
@@ -24,7 +35,7 @@ export default class Trenu extends Component {
       if (node.userData.children) {
         node.userData.children.forEach((child) => {
           if (queue.indexOf(child) === -1) {
-            queue.push({userData: child, parent: node, children: [], expanded: false, visible: false, depth: node.depth + 1, height: -1, ref: React.createRef()});
+            queue.push({...nodeObject, userData: child, children: [], parent: node, depth: node.depth + 1, ref: React.createRef()});
             node.children.push(queue[queue.length-1]);
             if (node.depth + 1 > maxHeight) maxHeight = node.depth + 1;
           }
@@ -78,28 +89,43 @@ export default class Trenu extends Component {
         active: node.parent
       })
     }
-    console.log(this.state);
+    
+    if (node.userData.action) {
+      node.userData.action(node, e);
+    }
+
     
   }
 
 
   render() {
+    
+    const scaling = this.props.scaling || 0.618;
+    const size = this.props.nodeSize || 72;
+
     return (
-      <div style={{...this.props.style, overflow: `hidden`}}>
-        <Canvas focusOn={this.state.active} scaling={this.props.scaling} nodeSize={this.props.size}>
+      <div style={{...this.props.style,
+        overflow: `hidden`,
+        position: `relative`,
+        display: `flex`,
+        justifyContent: `center`,
+        alignItems: `center`
+        }}>
+        <Canvas focusOn={this.state.active} scaling={scaling} nodeSize={size}>
           <Node
+            style={this.props.nodeStyle}
+            lineStyle={this.props.lineStyle}
+            lineWidth={this.props.lineWidth}
             onClick={this.handleClick}
-            data={this.state.nodes[0]}
-            scaling={this.props.scaling}
+            state={this.state.nodes[0]}
+            scale={scaling}
             span={200}
             active={this.state.active} 
             root={this.state.root}
-            size={this.props.size}
+            size={size}
           />
         </Canvas>
       </div>
     )
   }
 }
-
-

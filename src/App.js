@@ -5,17 +5,26 @@ import Trenu from './components/Trenu';
 class App extends Component {
   state = {
     root: {
-      name: "root",
+      value: "root",
       children: [
-        {name: "1", action: (arg) => {alert(arg)}},
-        {name: "2"},
-        {name: "3", children: [
-          {name: "A"},
-          {name: "B"},
-          {name: "C"},
-          {name: "D"},
-          {name: "E"},
-          {name: "F"},
+        {value: "1", children: [
+          {value: "A"},
+          {value: "B"}
+        ]},
+        {value: "2", children: [
+          {value: "A"},
+          {value: "B"},
+          {value: "C"},
+          {value: "D"},
+          {value: "E"}
+        ]},
+        {value: "3", children: [
+          {value: "A"},
+          {value: "B"},
+          {value: "C"},
+          {value: "D"},
+          {value: "E"},
+          {value: "F"},
         ]}
       ]}
   }
@@ -24,10 +33,12 @@ class App extends Component {
     return (
       <div className="App">
         <Trenu 
-          style={{width: `100%`, height: `100%`, backgroundColor: `#EEE`}}
+          style={{width: `100%`, height: `100%`}}
+          nodeStyle={{backgroundColor: `rgb(40,40,40)`, color: `white`, fontSize: `1.5em`, border: `2px solid gray`}}
+          nodeSize={100}
+          lineStyle={{backgroundColor: `gray`}}
+          lineWidth={2}
           root={this.state.root}
-          size={72}
-          scaling={0.618}
         />
       </div>
     );
