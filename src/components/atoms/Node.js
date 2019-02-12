@@ -11,7 +11,7 @@ export default class Node extends Component {
     }
     
     const deadzone = this.props.size;
-    const offset = this.props.offset || 0;
+    const offset = this.props.offset / this.props.scaling;
     const span = this.props.data.expanded? this.props.span : 0;
     const angle = this.props.angle || 0;
     const angleDelta = this.props.data.children? 2 * Math.PI / this.props.data.children.length : 0;
@@ -50,6 +50,7 @@ export default class Node extends Component {
               transform: `translate(-50%, -50%) scale(${this.props.scaling})`,
               opacity: `${interpolated.subtreeOpacity}`
               }}
+              ref={this.props.data.ref}
               >
               <div style={{...miniWrapper}}>
                 

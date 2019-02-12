@@ -7,13 +7,13 @@ export default class Trenu extends Component {
     super(props);
 
     //generate data structure to work with (BFS)
-    let root = {userData: props.root, parent: null, children: [], expanded: true, visible: true, height: 0};
+    let root = {userData: props.root, parent: null, children: [], expanded: true, visible: true, depth: 0, height: -1, ref: React.createRef()};
     let nodes = [root];
     let queue = [];
     let maxHeight = 0;
     
     root.userData.children.forEach(child => {
-      queue.push({userData: child, parent: root, children: [], expanded: false, visible: true, height: 1});
+      queue.push({userData: child, parent: root, children: [], expanded: false, visible: true, depth: 1, height: -1, ref: React.createRef()});
       root.children.push(queue[queue.length-1]);
       maxHeight = 1;
     });
@@ -24,9 +24,9 @@ export default class Trenu extends Component {
       if (node.userData.children) {
         node.userData.children.forEach((child) => {
           if (queue.indexOf(child) === -1) {
-            queue.push({userData: child, parent: node, children: [], expanded: false, visible: false, height: node.height + 1});
+            queue.push({userData: child, parent: node, children: [], expanded: false, visible: false, depth: node.depth + 1, height: -1, ref: React.createRef()});
             node.children.push(queue[queue.length-1]);
-            if (node.height + 1 > maxHeight) maxHeight = node.height + 1;
+            if (node.depth + 1 > maxHeight) maxHeight = node.depth + 1;
           }
         });
       }
@@ -34,7 +34,7 @@ export default class Trenu extends Component {
     
     //depth -> height
     nodes.forEach((value, index, array) => {
-      array[index].height = maxHeight - array[index].height;
+      array[index].height = maxHeight - array[index].depth;
     });
 
     this.state = {
@@ -78,18 +78,20 @@ export default class Trenu extends Component {
         active: node.parent
       })
     }
+    console.log(this.state);
+    
   }
 
 
   render() {
     return (
       <div style={{...this.props.style, overflow: `hidden`}}>
-        <Canvas>
+        <Canvas focusOn={this.state.active} scaling={this.props.scaling} nodeSize={this.props.size}>
           <Node
             onClick={this.handleClick}
             data={this.state.nodes[0]}
             scaling={this.props.scaling}
-            span={100}
+            span={200}
             active={this.state.active} 
             root={this.state.root}
             size={this.props.size}

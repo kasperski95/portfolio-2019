@@ -11,7 +11,11 @@ class App extends Component {
         {name: "2"},
         {name: "3", children: [
           {name: "A"},
-          {name: "B"}
+          {name: "B"},
+          {name: "C"},
+          {name: "D"},
+          {name: "E"},
+          {name: "F"},
         ]}
       ]}
   }
@@ -20,10 +24,10 @@ class App extends Component {
     return (
       <div className="App">
         <Trenu 
-          style={{width: `500px`, height: `500px`, backgroundColor: `#EEE`}}
+          style={{width: `100%`, height: `100%`, backgroundColor: `#EEE`}}
           root={this.state.root}
-          size={40}
-          scaling={0.75}
+          size={72}
+          scaling={0.618}
         />
       </div>
     );
