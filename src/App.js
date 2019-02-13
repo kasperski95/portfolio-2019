@@ -24,7 +24,7 @@ class App extends Component {
           {value: "C"},
           {value: "D"},
           {value: "E"},
-          {value: "F"},
+          {value: "F"}
         ]}
       ]}
   }
@@ -38,6 +38,7 @@ class App extends Component {
           nodeSize={100}
           lineStyle={{backgroundColor: `gray`}}
           lineWidth={2}
+          lineLength={200}
           root={this.state.root}
         />
       </div>

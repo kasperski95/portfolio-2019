@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Motion, spring } from 'react-motion'
+import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
 export default class Canvas extends Component {
   render() {
@@ -13,20 +13,20 @@ export default class Canvas extends Component {
     if(focused.ref.current) {
       let node = focused;
       while(node) {
-        x -= (node.ref.current.parentNode.parentNode.offsetLeft * scaling**node.depth);    
-        y -= (node.ref.current.parentNode.parentNode.offsetTop * scaling**node.depth);
+        x -= (node.ref.current.parentNode.offsetLeft * scaling**node.depth);    
+        y -= (node.ref.current.parentNode.offsetTop * scaling**node.depth);
         node = node.parent;
       }
     }
 
     return (
-      <Motion style={{x: spring(x), y: spring(y), scale: spring(scale)}}>{i => (
-        <div style={{...canvasStyle,
-          transform: `translate(${i.x * i.scale}px, ${i.y * i.scale}px) scale(${i.scale})`}}>
+      <Spring native to={{x, y, scale}}>{i => (
+        <animated.div style={{...canvasStyle,
+          transform: interpolate([i.x, i.y, i.scale], (ix, iy, is) => `translate(${ix * is}px, ${iy * is}px) scale(${is})`)}}>
           {this.props.children}
-        </div>
+        </animated.div>
       )}
-      </Motion>
+      </Spring>
     )
   }
 }

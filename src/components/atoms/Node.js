@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Motion, spring } from 'react-motion'
+import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
 export default class Node extends Component {
   render() {
@@ -26,97 +26,102 @@ export default class Node extends Component {
       subtree: (!node.visible && criticalPath.indexOf(node) === -1 && criticalPath.indexOf(node.parent) !== -1)? 0 : 1,
       line: (node.visible && node !== this.props.active)? 1 : 0
     }
+    let subtrees = node.expanded || node.transforming? (node.children || []) : [];
 
     return (
-      <Motion 
-        defaultStyle={{
-          span: 0,
+      <Spring
+        native 
+        from={{
+          offset: 0,
           nodeOpacity: 1,
           subtreeOpacity: 1,
           lineOpacity: 1,
-          angle: 0
+          angle: (node.depth > 1)? (this.props.initialAngle || 0) : angle
         }}
-        style={{
-          span: spring(span),
-          nodeOpacity: spring(opacity.node),
-          subtreeOpacity: spring(opacity.subtree),
-          lineOpacity: spring(opacity.line),
-          angle: spring(angle)
-        }}>{i => { // i(nterpolated)
-          const subtrees = (i.span > 1)? (node.children || []) : [];
-          const disabled = (0 < i.span && i.span < size)? true : false;
+        to={{
+          offset,
+          nodeOpacity: opacity.node,
+          subtreeOpacity: opacity.subtree,
+          lineOpacity: opacity.line,
+          angle
+        }}
+        onRest={() => {if (this.props.onComplete && node.transforming) this.props.onComplete(node)}}
+        >{i => { // i(nterpolated props)
+          //const subtrees = (i.span > 1)? (node.children || []) : [];
+          
+          //const disabled = (0 < i.span && i.span < size)? true : false;
 
           return (
             <React.Fragment>
               {/* THE LINE */}
-              <div style={{            
+              <animated.div style={{            
                   backgroundColor: `black`,
                   ...this.props.lineStyle,
                   width: `${this.props.lineWidth || 2}px`,
                   position: `absolute`,
                   top: `0px`,
                   left: `0px`,
-                  height: `${Math.max(offset - size/scale/2 - size/2, 0)}px`,
+                  height: i.offset.interpolate(o => `${Math.max(o - size/scale/2 - size/2, 0)}px`),
                   transformOrigin: `0% 0%`,
-                  transform: `rotate(${i.angle + Math.PI}rad) translate(-${this.props.lineWidth/2 || 1}px, ${size/scale/2}px)`,
+                  transform: i.angle.interpolate(a => `rotate(${a + Math.PI}rad) translate(-${this.props.lineWidth/2 || 1}px, ${size/scale/2}px)`),
                   zIndex: `50`,
-                  opacity: `${i.lineOpacity}`
+                  opacity: i.lineOpacity.interpolate(o => `${o}`)
                 }}>
-              </div>
+              </animated.div>
               
               {/* POSITION RELATIVE TO PARENT */}
-              <div style={{...bigWrapper,
-                width: `${size}px`,
-                height: `${size}px`,
-                top: `${-Math.cos(-i.angle) * offset}px`,
-                left: `${-Math.sin(-i.angle) * offset}px`,
+              <animated.div style={{...bigWrapper,
+                top: interpolate([i.offset, i.angle], (o,a) => `${-Math.cos(-a) * o}px`),
+                left: interpolate([i.offset, i.angle], (o,a) => `${-Math.sin(-a) * o}px`),
                 transform: `translate(-50%, -50%) scale(${scale})`,
-                opacity: `${i.subtreeOpacity}`
+                opacity: i.subtreeOpacity.interpolate(o => `${o}`)
                 }}
                 >
 
-                {/* REFERENCE POINT FOR NODES */}
-                <div style={miniWrapper}>
+
 
                   {/* RECURENCE */}
                   {subtrees.map((value, index, array) => {
+                    let childAngle = (angleDelta * index + angleDelta/2);
+                    
+                    // minimize rotation
+                    if (childAngle < angle - Math.PI) childAngle += 2 * Math.PI;
+                    if (childAngle > angle + Math.PI) childAngle -= 2 * Math.PI;
+                    
                     return (
                       <Node
                         {...this.props}
                         key={index}
                         state={array[index]}
-                        offset={i.span}
-                        angle={angleDelta * index + angleDelta/2}
-                        disabled={disabled}        
+                        offset={span}
+                        angle={childAngle}
+                        initialAngle={angle}        
                       />);
                   })}
 
                   {/* THE NODE */}
-                  <div style={{...nodeDefaultStyle, borderRadius: `${size}px`, ...this.props.style, ...nodeStyle, transform: `translate(-50%, -50%) scale(${1 / scale})`, opacity: `${i.nodeOpacity}`}}
-                    onClick={(e) => {if(!this.props.disabled && node.visible) this.props.onClick(node, e)}}
+                  <animated.div style={{...nodeDefaultStyle, borderRadius: `${size}px`, ...this.props.style, ...nodeStyle,
+                    width: `${size}px`, height: `${size}px`,
+                    transform: `translate(-50%, -50%) scale(${1 / scale})`, opacity: i.nodeOpacity.interpolate(o => `${o}`)}}
+                    onClick={(e) => {if(node.visible) this.props.onClick(node, e)}}
                     ref={node.ref}
-                  >{node.userData.value}</div>
-                </div>
-              </div>
+                  >{node.userData.value}</animated.div>
+
+              </animated.div>
             </React.Fragment>
-      )}}</Motion>
+      )}}</Spring>
     )
   }
 }
 
 // position relative to parent
 const bigWrapper = {
+  width: `0px`,
+  height: `0px`,
   position: `absolute`,
   zIndex: `100`
 }
 
-// reference point for children
-const miniWrapper = {
-  position: `relative`,
-  width: `100%`,
-  height: `100%`,
-  transform: `translate(50%, 50%)`
-}
 
 const nodeDefaultStyle = {
   width: `100%`,

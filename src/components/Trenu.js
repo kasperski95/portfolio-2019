@@ -12,6 +12,7 @@ export default class Trenu extends Component {
       children: [],
       expanded: false,
       visible: false,
+      transforming: false,
       depth: -1,
       height: -1,
       ref: null
@@ -79,6 +80,7 @@ export default class Trenu extends Component {
     } else if (node.parent) {
       //go higher
       node.expanded = false;
+      node.transforming = true;
       node.parent.visible = true;
       node.parent.children.forEach((value, index, array) => {
         array[index].visible = true;
@@ -93,8 +95,12 @@ export default class Trenu extends Component {
     if (node.userData.action) {
       node.userData.action(node, e);
     }
+  }
 
-    
+
+  handleComplete = (node) => {
+    node.transforming = false;
+    this.setState({nodes: this.state.nodes});
   }
 
 
@@ -117,9 +123,10 @@ export default class Trenu extends Component {
             lineStyle={this.props.lineStyle}
             lineWidth={this.props.lineWidth}
             onClick={this.handleClick}
+            onComplete={this.handleComplete}
             state={this.state.nodes[0]}
             scale={scaling}
-            span={200}
+            span={this.props.lineLength || 200}
             active={this.state.active} 
             root={this.state.root}
             size={size}
