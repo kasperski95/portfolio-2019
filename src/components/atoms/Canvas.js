@@ -19,8 +19,11 @@ export default class Canvas extends Component {
       }
     }
 
+    console.log(this.props.animate);
+    
+
     return (
-      <Spring native to={{x, y, scale}}>{i => (
+      <Spring immediate={!this.props.animate} native to={{x, y, scale}}>{i => (
         <animated.div style={{...canvasStyle,
           transform: interpolate([i.x, i.y, i.scale], (ix, iy, is) => `translate(${ix * is}px, ${iy * is}px) scale(${is})`)}}>
           {this.props.children}
