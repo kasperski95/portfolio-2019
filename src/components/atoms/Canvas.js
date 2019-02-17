@@ -18,16 +18,18 @@ export default class Canvas extends Component {
         node = node.parent;
       }
     }
-
-    console.log(this.props.animate);
     
-
     return (
       <Spring immediate={!this.props.animate} native to={{x, y, scale}}>{i => (
-        <animated.div style={{...canvasStyle,
-          transform: interpolate([i.x, i.y, i.scale], (ix, iy, is) => `translate(${ix * is}px, ${iy * is}px) scale(${is})`)}}>
-          {this.props.children}
-        </animated.div>
+        <React.Fragment>
+          <animated.div style={{...canvasBgStyle,
+            transform: interpolate([i.x, i.y, i.scale], (ix, iy, is) => `translate(${ix * is}px, ${iy * is}px) scale(${is})`)}}>
+          </animated.div>
+          <animated.div style={{...canvasStyle,
+            transform: interpolate([i.x, i.y, i.scale], (ix, iy, is) => `translate(${ix * is}px, ${iy * is}px) scale(${is})`)}}>
+            {this.props.children}
+          </animated.div>
+        </React.Fragment>
       )}
       </Spring>
     )
@@ -35,8 +37,16 @@ export default class Canvas extends Component {
 }
 
 
+
 const canvasStyle = {
   position: `relative`,
-  width: `0px`,
-  height: `0px`
+  width: `0%`,
+  height: `0%`
+}
+
+const canvasBgStyle = {
+  width: `1000%`,
+  height: `1000%`,
+  position: `absolute`,
+  background: `url(bg.svg)`
 }

@@ -14,8 +14,6 @@ export default class Node extends Component {
     }
     
     // init
-    const onHoverColor = `gray`;
-
     const node = this.props.state;
     const size = this.props.size;
     const borderOffset = this.props.borderOffset;
@@ -54,6 +52,16 @@ export default class Node extends Component {
     }
 
     const children = node.expanded || node.transforming? (node.children || []) : [];
+    
+    // node -> page
+    let width = size;
+    let height = size;
+    let borderRadius = size;
+    if (children.length == 0 && node == this.props.active) {
+      width = this.props.wrapper.width;
+      height = this.props.wrapper.height;
+      borderRadius = 0;
+    }
 
     return (
       <Spring
@@ -65,7 +73,9 @@ export default class Node extends Component {
           subtreeOpacity: 1,
           lineOpacity: 1,
           labelOpacity: 0,
-          angle: (node.depth > 1)? (this.props.initialAngle || 0) : angle
+          angle: (node.depth > 1)? (this.props.initialAngle || 0) : angle,
+          width: this.props.size,
+          height: this.props.size
         }}
         to={{
           offset,
@@ -73,7 +83,9 @@ export default class Node extends Component {
           subtreeOpacity: opacity.subtree,
           lineOpacity: opacity.line,
           labelOpacity: opacity.label,
-          angle
+          angle,
+          width,
+          height
         }}
         onRest={() => {
           if (this.props.onCollapsingComplete && node.transforming) this.props.onCollapsingComplete(node)
@@ -129,9 +141,11 @@ export default class Node extends Component {
                   
 
                   {/* THE NODE */}
-                  <animated.div style={{...nodeDefaultStyle, borderRadius: `${size}px`, ...this.props.style, ...nodeStyle,
-                    width: `${size}px`, height: `${size}px`,
-                    transform: `translate(-50%, -50%) scale(${1 / scale})`, opacity: i.nodeOpacity.interpolate(o => `${o}`)}}
+                  <animated.div style={{...nodeDefaultStyle, borderRadius: `${borderRadius}px`, ...this.props.style, ...nodeStyle,
+                    width: i.width.interpolate(w => `${w}px`),
+                    height: i.height.interpolate(h => `${h}px`),
+                    backgroundImage: `url(${node.userData.icon})`,
+                    transform: `translate(-50%, -50%) scale(${1/scale})`, opacity: i.nodeOpacity.interpolate(o => `${o}`)}}
                     onClick={(e) => {if(node.visible) this.props.onClick(node, e)}}
                     onMouseOver={(e) => {if(node.parent && !node.parent.transforming) this.props.onMouseOver(node, e)}}
                     onMouseLeave={(e) => {if(node.parent && !node.parent.transforming) this.props.onMouseLeave(node, e)}}
@@ -145,11 +159,12 @@ export default class Node extends Component {
                       position: `absolute`,
                       opacity: i.labelOpacity.interpolate(o => `${o}`)
                     }}>
-                      <div style={{...cornerStyle, top: `${-borderOffset}px`, left: `${-borderOffset}px`, borderTop: `${1}px solid ${onHoverColor}`, borderLeft: `${1}px solid ${onHoverColor}`, transform: `translate(0%, 0%)`}}></div>
+                      {/* <div style={{...cornerStyle, top: `${-borderOffset}px`, left: `${-borderOffset}px`, borderTop: `${1}px solid ${onHoverColor}`, borderLeft: `${1}px solid ${onHoverColor}`, transform: `translate(0%, 0%)`}}></div>
                       <div style={{...cornerStyle, top: `${-borderOffset}px`, left: `${borderOffset}px`, borderTop: `${1}px solid ${onHoverColor}`, borderRight: `${1}px solid ${onHoverColor}`, transform: `translate(-100%, 0%)`}}></div>
                       <div style={{...cornerStyle, top: `${borderOffset}px`, left: `${-borderOffset}px`, borderBottom: `${1}px solid ${onHoverColor}`, borderLeft: `${1}px solid ${onHoverColor}`, transform: `translate(0%, -100%)`}}></div>
                       <div style={{...cornerStyle, top: `${borderOffset}px`, left: `${borderOffset}px`, borderBottom: `${1}px solid ${onHoverColor}`, borderRight: `${1}px solid ${onHoverColor}`, transform: `translate(-100%,-100%)`}}></div>
-                      
+                       */}
+
                       {/* LABEL */}
                       <div style={{
                         //backgroundColor: `red`,
@@ -166,7 +181,7 @@ export default class Node extends Component {
                         justifyContent: labelTextAlign,
                         transform: `scale(${1/scale})`,
                         opacity: i.labelOpacity.interpolate(o => `${o}`)
-                      }}><span style={{width: `${labelWidth}px`, whiteSpace: `nowrap`}}>{node.userData.label}</span></div>
+                      }}><span style={{width: `${labelWidth}px`, whiteSpace: `nowrap`, color: `white`}}>{node.userData.label}</span></div>
                       
                     </animated.div>
                     {node.userData.value}
@@ -201,7 +216,11 @@ const nodeDefaultStyle = {
   justifyContent: `center`,
   alignItems: `center`,
   cursor: `default`,
-  userSelect: `none`
+  userSelect: `none`,
+  backgroundSize: `50% 50%`,
+  backgroundRepeat: `no-repeat`,
+  backgroundPosition: `center center`,
+  fill: `white`
 }
 
 const nodeStyle = {
@@ -216,4 +235,8 @@ const cornerStyle = {
   width: `0.5em`,
   height: `0.5em`,
   boxSizing: `border-box`
+}
+
+const labelDefaultStyle = {
+  
 }
