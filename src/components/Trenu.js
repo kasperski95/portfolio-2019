@@ -86,7 +86,32 @@ export default class Trenu extends Component {
   }
     
 
+  handleExternalActiveChange = (newActive, e) => {
+    // collapse and hide all nodes
+    this.state.nodes.forEach(node => {node.expanded = false; node.visible = false;});
+    this.state.active.transforming = true;
+
+    // expand all parents
+    let tmp = newActive.parent;
+    while (tmp) {
+      tmp.expanded = true;
+      tmp = tmp.parent;
+    }
+
+    // expand and show node
+    newActive.expanded = true;
+    newActive.visible = true;
+    newActive.transforming = true;
+    newActive.children.forEach(node => {node.visible = true;});
+
+    // update state
+    this.setState({nodes: this.state.nodes, active: newActive});
+  }
+
+
   handleClick = (node, e) => {
+    let active = this.state.active;
+
     if (node.parent) {
       var animate = true;
       node.transforming = true;
@@ -106,9 +131,10 @@ export default class Trenu extends Component {
         array[index].visible = true;
       });
 
+      active = node;
       this.setState({
         nodes: this.state.nodes,
-        active: node,
+        active,
         animate
       })
       
@@ -121,15 +147,19 @@ export default class Trenu extends Component {
         array[index].visible = true;
       });
 
+      active = node.parent;
       this.setState({
         nodes: this.state.nodes,
-        active: node.parent,
+        active,
         animate
       })
     }
     
+    // users action
     if (node.userData.action) {
-      node.userData.action(node, e);
+      node.userData.action(node, active, e);
+    } else if (this.props.defaultAction) {
+      this.props.defaultAction(node, active, e);
     }
   }
 

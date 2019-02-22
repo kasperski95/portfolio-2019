@@ -17,10 +17,10 @@ export default class Node extends Component {
     const node = this.props.state;
     const size = this.props.size;
     const borderOffset = this.props.borderOffset;
-    const labelOffset = this.props.labelOffset;
     const scale = this.props.scale;
     const angle = this.props.angle;
-    
+
+    const labelOffset = this.props.labelOffset / scale;
     const span = node.expanded? this.props.span : 0;
     const angleDelta = node.children? (2 * Math.PI / node.children.length) : 0;
     const labelWidth = this.props.labelWidth / scale;
@@ -139,6 +139,21 @@ export default class Node extends Component {
                   })}
 
                   
+                  {/* LABEL */}
+                  <animated.div style={{
+                    width: `0`,
+                    height: `0`,
+                    position: `absolute`,
+                    top: `${labelBottomOffset}px`,
+                    left: `${labelRightOffset}px`,
+                    display: `flex`,
+                    alignItems: labelAlignItems,
+                    justifyContent: labelTextAlign,
+                    transform: `scale(${1/scale})`,
+                    opacity: i.labelOpacity.interpolate(o => `${o}`)
+                  }}>
+                    <span style={{whiteSpace: `nowrap`, color: `white`, fontSize: `${1/scale}em`}}>{node.userData.label}</span>
+                  </animated.div>
 
                   {/* THE NODE */}
                   <animated.div style={{...nodeDefaultStyle, borderRadius: `${borderRadius}px`, ...this.props.style, ...nodeStyle,
@@ -151,48 +166,9 @@ export default class Node extends Component {
                     onMouseLeave={(e) => {if(node.parent && !node.parent.transforming) this.props.onMouseLeave(node, e)}}
                     ref={node.ref}
                   >
-
-                    {/* SQUARE BORDER AROUND THE NODE */}
-                    <animated.div style={{
-                      width: `0px`,
-                      height: `0px`,
-                      position: `absolute`,
-                      opacity: i.labelOpacity.interpolate(o => `${o}`)
-                    }}>
-                      {/* <div style={{...cornerStyle, top: `${-borderOffset}px`, left: `${-borderOffset}px`, borderTop: `${1}px solid ${onHoverColor}`, borderLeft: `${1}px solid ${onHoverColor}`, transform: `translate(0%, 0%)`}}></div>
-                      <div style={{...cornerStyle, top: `${-borderOffset}px`, left: `${borderOffset}px`, borderTop: `${1}px solid ${onHoverColor}`, borderRight: `${1}px solid ${onHoverColor}`, transform: `translate(-100%, 0%)`}}></div>
-                      <div style={{...cornerStyle, top: `${borderOffset}px`, left: `${-borderOffset}px`, borderBottom: `${1}px solid ${onHoverColor}`, borderLeft: `${1}px solid ${onHoverColor}`, transform: `translate(0%, -100%)`}}></div>
-                      <div style={{...cornerStyle, top: `${borderOffset}px`, left: `${borderOffset}px`, borderBottom: `${1}px solid ${onHoverColor}`, borderRight: `${1}px solid ${onHoverColor}`, transform: `translate(-100%,-100%)`}}></div>
-                       */}
-
-                      {/* LABEL */}
-                      <div style={{
-                        //backgroundColor: `red`,
-                        width: `0px`,
-                        height: `0`,
-                        backgroundColor: `red`,
-                        fontSize: `0.75em`,
-                        position: `absolute`,
-                        top: `${labelBottomOffset}px`,
-                        left: `${labelRightOffset}px`,
-                        display: `flex`,
-                        alignItems: labelAlignItems,
-                        color: `rgba(0, 0, 0, 0.5)`,
-                        justifyContent: labelTextAlign,
-                        transform: `scale(${1/scale})`,
-                        opacity: i.labelOpacity.interpolate(o => `${o}`)
-                      }}><span style={{width: `${labelWidth}px`, whiteSpace: `nowrap`, color: `white`}}>{node.userData.label}</span></div>
-                      
-                    </animated.div>
-                    {node.userData.value}
                     
+                    {node.userData.value}
                   </animated.div>
-
-                  
-
-                  
-                  
-
               </animated.div>
             </React.Fragment>
       )}}</Spring>
@@ -235,8 +211,4 @@ const cornerStyle = {
   width: `0.5em`,
   height: `0.5em`,
   boxSizing: `border-box`
-}
-
-const labelDefaultStyle = {
-  
 }
