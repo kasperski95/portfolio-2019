@@ -12,6 +12,7 @@ export default class Trenu extends Component {
     labelWidth: this.props.labelWidth || 72,
     lineWidth: this.props.lineWidth || 2,
     lineStyle: this.props.lineStyle,
+    activeLeafStyle: this.props.activeLeafStyle,
     angle: 0
   }
   
@@ -28,17 +29,19 @@ export default class Trenu extends Component {
       transforming: false,
       depth: -1,
       height: -1,
-      ref: null
+      ref: null,
+      labelDummyRef: null,
+      labelWidth: 0
     }
 
     //generate data structure to work with (BFS)
-    let root = {...nodeObject, userData: props.seedData, children: [], expanded: true, visible: true, depth: 0, ref: React.createRef()};
+    let root = {...nodeObject, userData: props.seedData, children: [], expanded: true, visible: true, depth: 0, ref: React.createRef(), labelDummyRef: React.createRef()};
     let nodes = [root];
     let queue = [];
     let maxHeight = 0;
     
     root.userData.children.forEach(child => {
-      queue.push({...nodeObject, userData: child, children: [], parent: root, visible: true, depth: 1, ref: React.createRef()});
+      queue.push({...nodeObject, userData: child, children: [], parent: root, visible: true, depth: 1, ref: React.createRef(), labelDummyRef: React.createRef()});
       root.children.push(queue[queue.length-1]);
       maxHeight = 1;
     });
@@ -49,7 +52,7 @@ export default class Trenu extends Component {
       if (node.userData.children) {
         node.userData.children.forEach((child) => {
           if (queue.indexOf(child) === -1) {
-            queue.push({...nodeObject, userData: child, children: [], parent: node, depth: node.depth + 1, ref: React.createRef()});
+            queue.push({...nodeObject, userData: child, children: [], parent: node, depth: node.depth + 1, ref: React.createRef(), labelDummyRef: React.createRef()});
             node.children.push(queue[queue.length-1]);
             if (node.depth + 1 > maxHeight) maxHeight = node.depth + 1;
           }
@@ -82,6 +85,12 @@ export default class Trenu extends Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
+
+    this.state.nodes.forEach(node => {     
+      node.labelWidth = node.labelDummyRef.current.offsetWidth;
+    })
+    this.setState({nodes: this.state.nodes});
+
     this.handleResize();
   }
     
@@ -181,8 +190,10 @@ export default class Trenu extends Component {
 
 
   handleResize = (e) => {  
-    const width = this.state.wrapper.ref.current.offsetWidth;
-    const height = this.state.wrapper.ref.current.offsetHeight;
+    const style = window.getComputedStyle(this.state.wrapper.ref.current);
+    const width = parseInt(style.getPropertyValue("width")) - parseInt(style.getPropertyValue("padding-left") || 0) - parseInt(style.getPropertyValue("padding-right") || 0);
+    const height = parseInt(style.getPropertyValue("height")) - parseInt(style.getPropertyValue("padding-top") || 0) - parseInt(style.getPropertyValue("padding-bottom") || 0);        
+
     const mobileMode = this.config.span * 2 + this.config.borderOffset + this.config.labelWidth * 2 > Math.min(width, height);
 
     this.setState((prevState) => ({
@@ -202,12 +213,8 @@ export default class Trenu extends Component {
 
   includeContent = () => {
     if (this.state.wrapper.ref) {
-      const opacity = this.state.mouseOver && this.state.mobileMode? 1 : 0;
-      const transitionDelay = this.state.mouseOver? `1s` : `0s`;
-
       return (
         <React.Fragment>
-          <h1 style={{...mobileTopBarStyle, opacity, transitionDelay}}>{this.state.mouseOverLabel}</h1>
           <Canvas animate={this.state.animate} focusOn={this.state.active} scaling={this.config.scale} nodeSize={this.config.size}>
             <Node
               style={this.props.nodeStyle}
@@ -241,22 +248,17 @@ export default class Trenu extends Component {
           alignItems: `center`,
         }}
       >
+
+        {/* DETERMINE LABELS WIDTH */}
+        <div style={{visibility: `hidden`, position: `absolute`}}>
+          {this.state.nodes.map((node, index) => (
+            <span ref={node.labelDummyRef} key={index}>{node.userData.label}</span>
+          ))}
+        </div>
+
+        {/* CORE */}
         {this.includeContent()}
       </div>
     )
   }
-}
-
-
-const mobileTopBarStyle = {
-  width: `100%`,
-  fontSize: `1.5em`,
-  height: `1.5em`,
-  position: `absolute`,
-  top: `0`,
-  marginTop: `0em`,
-  fontWeight: `normal`,
-  color: `gray`,
-  transition: `0.2s all`,
-  fontWeight: `normal`
 }

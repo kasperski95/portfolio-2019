@@ -48,5 +48,6 @@ const canvasBgStyle = {
   width: `1000%`,
   height: `1000%`,
   position: `absolute`,
-  background: `url(bg.svg)`
+  background: `url(bg.svg)`,
+  backgroundSize: `25em`
 }
