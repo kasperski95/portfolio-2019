@@ -252,7 +252,7 @@ export default class Trenu extends Component {
         {/* DETERMINE LABELS WIDTH */}
         <div style={{visibility: `hidden`, position: `absolute`}}>
           {this.state.nodes.map((node, index) => (
-            <span ref={node.labelDummyRef} key={index}>{node.userData.label}</span>
+            <span style={{whiteSpace: `nowrap`}} ref={node.labelDummyRef} key={index}>{node.userData.label}</span>
           ))}
         </div>
 

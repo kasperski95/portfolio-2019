@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Spring, animated, interpolate } from 'react-spring/renderprops'
 import './App.css';
 import Trenu from './components/Trenu';
-
-
+import Scrollbar from 'react-scrollbars-custom';
 
 const theme = {
   dark1: `#121212`,
@@ -24,32 +23,45 @@ export default class App extends Component {
     trenu: React.createRef(),
     header: {
       content: [],
-      transition: 1.0
+      scrollbarRef: React.createRef()
     }
   }
 
 
   handleNodeClick = (node, active, e) => {
     // accumulate all nodes in the path to root
-    let pathToRoot = [{node: active, bTransitioning: true}];
+    let pathToRoot = [{node: active, included: false}];
     let tmp = active.parent;
     while(tmp) {
-      pathToRoot.push({node: tmp, bTransitioning: true});
+      pathToRoot.push({node: tmp, included: false});
       tmp = tmp.parent;
     }
     pathToRoot.reverse();
+
+    // determine animation & combine old and new labels
     
-    // determine which labels shouldn't be animated
-    for (let i = 0; i < pathToRoot.length; i++) {
-      for (let j = 0; j < this.state.header.content.length; j++) {
-        if (pathToRoot[i].node == this.state.header.content[j].node) {
-          pathToRoot[i].bTransitioning = false;
+    let content = [];
+    for(let i = 0; i < this.state.header.content.length; i++) {
+      let skipInclude = false;
+      for (let j = 0; j < pathToRoot.length; j++) {   
+        if (this.state.header.content[i].node == pathToRoot[j].node) {
+          pathToRoot[j].included = true;
+          const active = (j == pathToRoot.length - 1);
+          content.push({node: pathToRoot[j].node, expanding: false, collapsing: false, active});
+          skipInclude = true;
           break;
         }
       }
-    }
+      if (!skipInclude && !this.state.header.content[i].collapsing)
+        content.push({node: this.state.header.content[i].node, expanding: false, collapsing: true, active: false});
+    }    
+    pathToRoot.forEach((el, index) => {
+      const active = (index == pathToRoot.length - 1);
+      if (!el.included) content.push({node: el.node, expanding: true, collapsing: false, active});
+    });    
 
-    this.setState({header: {content: pathToRoot}});
+    // update state
+    this.setState(prevState => ({header: {...prevState.header, content}}))
   }
   
 
@@ -60,7 +72,7 @@ export default class App extends Component {
       children: [
         {label: "3D", icon: "/icons/cube.svg", children: [
           {label: "PROJECTS PROJECTS PROJECTS", value: 1, content: generateNodePage("test")},
-          {label: "SKILLS"}
+          {label: "SKILLS", children: [{}, {}, {}]}
         ]},
         {label: "CONTACT", icon: "/icons/device-mobile.svg", children: [
           {label: "790588598"},
@@ -75,38 +87,78 @@ export default class App extends Component {
       ]}
  
 
+      
     return (
       <div className="App" style={appStyle}>
 
+
+
+
         {/* HEADER */}
-        <div style={headerStyle}><div style={{width: `100%`, overflowX: `hidden`}}>{
-          this.state.header.content.map((el, index) => {
-            const display = (index == 0)? `none` : `inline-block`;
-            return (
-              <span>
-                <Spring native from={{transition: 0}} to={{transition: this.state.header.transition}}>{i => ( // i(nterpolated props)
-                  <React.Fragment>
-                    <animated.div style={{cursor: `default`, userSelect: `none`, display}}>|</animated.div>
-                    <animated.div style={{
-                      width: `${el.node.labelWidth}px`, //i.transition.interpolate(t => `${el.node.labelWidth}px`),
-                      display: `inline-block`,
-                      overflow: `hidden`}}
-                    >
-                      <animated.div style={{cursor: `default`, userSelect: `none`, textAlign: `left`, marginLeft: `0%`}}
+        <div style={headerStyle}>
+
+          <Scrollbar ref={this.state.header.scrollbarRef}
+            style={{width: '100%', height: '100%', padding: `0em 0.5em`}}
+            trackXRenderer={
+              props => {
+                const {elementRef, style, ...restProps} = props;
+                return <span {...restProps} style={{...style, backgroundColor: theme.tWhite}} ref={elementRef}/>
+            }}
+            thumbXRenderer={
+              props => {
+                const {elementRef, style, ...restProps} = props;
+                return <div {...restProps} style={{...style, backgroundColor: `rgba(255,255,255,0.25)`}} ref={elementRef}/>
+            }}
+            contentRenderer={
+              props => {
+                const {elementRef, style, ...restProps} = props;
+                return <div {...restProps} style={{...style, paddingTop: `1em`}} ref={elementRef}/>
+          }}>
+            {this.state.header.content.map((el, index) => {
+              const display = (index == 0)? `none` : `inline-flex`;
+              const transitionFrom = (el.collapsing || (!el.collapsing && !el.expanding))? 1 : 0;
+              const transitionTo = el.collapsing? 0 : 1;
+              return (<Spring native from={{transition: transitionFrom}} to={{transition: transitionTo}}
+       
+                onRest={() => {this.state.header.scrollbarRef.current.scrollToRight();}}
+              >{i =>{
+                
+                return ( // i(nterpolated props)
+                  <animated.span style={{display: `inline-flex`, alignItems: `center`}}>
+
+                    {/* LINE */}
+                    <animated.div style={{cursor: `default`, userSelect: `none`, display, alignItems: `center`, justifyContent: `center`, overflow: `hidden`,
+                      width: i.transition.interpolate(t => `${t}em`),
+                      opacity: i.transition.interpolate(t => `${t * 0.5}`)
+                    }}>
+                      |
+                    </animated.div>
+
+                    {/* LABEL */}
+                    <animated.div style={{display: `inline-flex`, alignItems: `center`, overflow: `hidden`,
+                      height: `2em`,
+                      width: i.transition.interpolate(t => `${el.node.labelWidth * t}px`)
+                    }}>
+                      <animated.div style={{cursor: `default`, userSelect: `none`, textAlign: `right`,
+                          marginLeft: i.transition.interpolate(t => `${-(1-t) * el.node.labelWidth}px`),
+                          opacity: i.transition.interpolate(t => `${el.active? 1 : t * 0.5}`)
+                        }}
                         onClick={(e) => {
                           this.state.trenu.current.handleExternalActiveChange(el.node, e);
                           this.handleNodeClick(el.node, el.node, e);
-                        }}>
+                      }}>
                         {el.node.userData.label}
                       </animated.div>
                     </animated.div>
-                  </React.Fragment>
-                  )}
-                </Spring>
-              </span>
-            )}
-          )
-        }</div></div>
+
+                  </animated.span>
+                )}}</Spring>  
+              )})}
+         </Scrollbar></div>
+        
+
+
+
         
 
         {/* TRENU */}
@@ -118,7 +170,7 @@ export default class App extends Component {
           lineStyle={{backgroundColor: `white`}}
           lineWidth={2}
           labelWidth={72}
-          maxLineLength={250}
+          maxLineLength={200}
           seedData={root}
           defaultAction={this.handleNodeClick}
         />
@@ -142,7 +194,6 @@ const headerStyle = {
   display: `flex`,
   boxSizing: `border-box`,
   alignItems: `center`,
-  padding: `0em ${theme.marginX}`,
   zIndex: `100`,
   whiteSpace: `nowrap`,
   boxShadow: `0em 1em 1em rgba(0,0,0,0.01)`

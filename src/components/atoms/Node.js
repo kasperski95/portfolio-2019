@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
+
 export default class Node extends Component {
   render() {
     // nodes from active.parent to root
@@ -61,7 +62,6 @@ export default class Node extends Component {
     let height = size;
     if (children.length == 0 && node == this.props.active) {
       height = width = Math.sqrt(this.props.wrapper.width**2 + this.props.wrapper.height**2); 
-      //this.props.wrapper.width;
     }
   
 
@@ -169,8 +169,8 @@ export default class Node extends Component {
                       color: `white`
                     }}
                     onClick={(e) => {if (node.visible && !bActiveLeaf) this.props.onClick(node, e)}}
-                    onMouseOver={(e) => {if (node.parent && !node.parent.transforming && !bActiveLeaf) this.props.onMouseOver(node, e)}}
-                    onMouseLeave={(e) => {if (node.parent && !node.parent.transforming && !bActiveLeaf) this.props.onMouseLeave(node, e)}}
+                    //onMouseOver={(e) => {if (node.parent && !node.parent.transforming && !bActiveLeaf) this.props.onMouseOver(node, e)}}
+                    //onMouseLeave={(e) => {if (node.parent && !node.parent.transforming && !bActiveLeaf) this.props.onMouseLeave(node, e)}}
                     ref={node.ref}
                   >
 
