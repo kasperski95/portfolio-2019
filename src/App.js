@@ -39,12 +39,11 @@ export default class App extends Component {
     pathToRoot.reverse();
 
     // determine animation & combine old and new labels
-    
     let content = [];
     for(let i = 0; i < this.state.header.content.length; i++) {
       let skipInclude = false;
       for (let j = 0; j < pathToRoot.length; j++) {   
-        if (this.state.header.content[i].node == pathToRoot[j].node) {
+        if (this.state.header.content[i].node == pathToRoot[j].node && !this.state.header.content[i].collapsing) {
           pathToRoot[j].included = true;
           const active = (j == pathToRoot.length - 1);
           content.push({node: pathToRoot[j].node, expanding: false, collapsing: false, active});
@@ -86,50 +85,46 @@ export default class App extends Component {
         ]}
       ]}
  
-
-      
     return (
       <div className="App" style={appStyle}>
-
-
-
 
         {/* HEADER */}
         <div style={headerStyle}>
 
-          <Scrollbar ref={this.state.header.scrollbarRef}
-            style={{width: '100%', height: '100%', padding: `0em 0.5em`}}
-            trackXRenderer={
-              props => {
-                const {elementRef, style, ...restProps} = props;
-                return <span {...restProps} style={{...style, backgroundColor: theme.tWhite}} ref={elementRef}/>
-            }}
-            thumbXRenderer={
-              props => {
-                const {elementRef, style, ...restProps} = props;
-                return <div {...restProps} style={{...style, backgroundColor: `rgba(255,255,255,0.25)`}} ref={elementRef}/>
-            }}
-            contentRenderer={
-              props => {
-                const {elementRef, style, ...restProps} = props;
-                return <div {...restProps} style={{...style, paddingTop: `1em`}} ref={elementRef}/>
-          }}>
-            {this.state.header.content.map((el, index) => {
-              const display = (index == 0)? `none` : `inline-flex`;
-              const transitionFrom = (el.collapsing || (!el.collapsing && !el.expanding))? 1 : 0;
-              const transitionTo = el.collapsing? 0 : 1;
-              return (<Spring native from={{transition: transitionFrom}} to={{transition: transitionTo}}
-       
-                onRest={() => {this.state.header.scrollbarRef.current.scrollToRight();}}
-              >{i =>{
+          <Spring native reset from={{mix: 0}} to={{mix: 1}}>{i => (
+        
+            <Scrollbar ref={this.state.header.scrollbarRef}
+              style={{width: '100%', height: '100%', padding: `0em 0.5em`}}
+              trackXRenderer={
+                props => {
+                  const {elementRef, style, ...restProps} = props;
+                  return <span {...restProps} style={{...style, backgroundColor: theme.tWhite}} ref={elementRef}/>
+              }}
+              thumbXRenderer={
+                props => {
+                  const {elementRef, style, ...restProps} = props;
+                  return <div {...restProps} style={{...style, backgroundColor: `rgba(255,255,255,0.25)`}} ref={elementRef}/>
+              }}
+              contentRenderer={
+                props => {           
+                  const {elementRef, style, ...restProps} = props;
+                  return <animated.div ref={elementRef} {...restProps} style={{...style, paddingTop: `1em`}}
+                    scrollLeft={i.mix.interpolate(m => {
+                      return 9999999999 /* just scroll Right */})}
+                  />
+            }}>
+              {this.state.header.content.map((el, index) => {
+                const display = (index == 0)? `none` : `inline-flex`;
+                const from = (el.collapsing || (!el.collapsing && !el.expanding))? 1 : 0;
+                const to = el.collapsing? 0 : 1;
                 
-                return ( // i(nterpolated props)
+                return (
                   <animated.span style={{display: `inline-flex`, alignItems: `center`}}>
 
                     {/* LINE */}
                     <animated.div style={{cursor: `default`, userSelect: `none`, display, alignItems: `center`, justifyContent: `center`, overflow: `hidden`,
-                      width: i.transition.interpolate(t => `${t}em`),
-                      opacity: i.transition.interpolate(t => `${t * 0.5}`)
+                      width: i.mix.interpolate(t => `${(from*(1-t)+to*t)}em`),
+                      opacity: i.mix.interpolate(t => `${(from*(1-t)+to*t) * 0.5}`)
                     }}>
                       |
                     </animated.div>
@@ -137,11 +132,11 @@ export default class App extends Component {
                     {/* LABEL */}
                     <animated.div style={{display: `inline-flex`, alignItems: `center`, overflow: `hidden`,
                       height: `2em`,
-                      width: i.transition.interpolate(t => `${el.node.labelWidth * t}px`)
+                      width: i.mix.interpolate(t => `${el.node.labelWidth * (from*(1-t)+to*t)}px`)
                     }}>
                       <animated.div style={{cursor: `default`, userSelect: `none`, textAlign: `right`,
-                          marginLeft: i.transition.interpolate(t => `${-(1-t) * el.node.labelWidth}px`),
-                          opacity: i.transition.interpolate(t => `${el.active? 1 : t * 0.5}`)
+                          marginLeft: i.mix.interpolate(t => `${-(1-(from*(1-t)+to*t)) * el.node.labelWidth}px`),
+                          opacity: i.mix.interpolate(t => `${el.active? 1 : (from*(1-t)+to*t) * 0.5}`)
                         }}
                         onClick={(e) => {
                           this.state.trenu.current.handleExternalActiveChange(el.node, e);
@@ -152,9 +147,10 @@ export default class App extends Component {
                     </animated.div>
 
                   </animated.span>
-                )}}</Spring>  
-              )})}
-         </Scrollbar></div>
+                )})}
+              </Scrollbar>
+            )}</Spring>
+          </div>
         
 
 
