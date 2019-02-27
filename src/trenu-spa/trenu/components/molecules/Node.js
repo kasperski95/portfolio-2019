@@ -3,6 +3,11 @@ import { Spring, animated, interpolate } from 'react-spring/renderprops'
 import ContentWrapper from '../atoms/ContentWrapper'
 
 export default class Node extends Component {
+  injectNodeContent(node, active) {
+    if (node.userData.content && node == active)
+      return <ContentWrapper>{node.userData.content}</ContentWrapper>;
+  }
+
   render() {
     // nodes from active.parent to root
     let criticalPath = [];
@@ -240,7 +245,7 @@ export default class Node extends Component {
                       opacity: i.iconOpacity.interpolate(o => `${(1-o)**opacityExp}`),
                       transform: `scale(1/${scale})`
                     }}>
-                      <ContentWrapper>{node.userData.content}</ContentWrapper>
+                      {this.injectNodeContent(node, this.props.active)}
                     </animated.div>
 
                   </animated.div>
