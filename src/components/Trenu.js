@@ -9,6 +9,11 @@ export default class Trenu extends Component {
     span: this.props.maxLineLength || 200,
     borderOffset: this.props.borderOffset || this.props.nodeSize/2 * 1.25,
     labelOffset: this.props.labelOffset || this.props.nodeSize/2 * 1.5,
+    labelStyle: this.props.labelStyle,
+    iconStyle: this.props.iconStyle,
+    activeIconStyle: this.props.activeIconStyle,
+    nodeStyle: this.props.nodeStyle,
+    activeStyle: this.props.activeStyle,
     labelWidth: this.props.labelWidth || 72,
     lineWidth: this.props.lineWidth || 2,
     lineStyle: this.props.lineStyle,
@@ -93,7 +98,12 @@ export default class Trenu extends Component {
 
     this.handleResize();
   }
-    
+   
+  
+  getRootNode() {
+    return this.state.root;
+  }
+
 
   handleExternalActiveChange = (newActive, e) => {
     // collapse and hide all nodes
@@ -114,7 +124,7 @@ export default class Trenu extends Component {
     newActive.children.forEach(node => {node.visible = true;});
 
     // update state
-    this.setState({nodes: this.state.nodes, active: newActive});
+    this.setState({nodes: this.state.nodes, active: newActive, animate: true});
   }
 
 

@@ -28,6 +28,14 @@ export default class App extends Component {
   }
 
 
+  componentDidMount() {
+    const root = this.state.trenu.current.getRootNode();
+    this.setState(prevState => ({
+      header: {...prevState.header, content: [{node: root, expanding: false, collapsing: false, active: true}]}
+    }))
+  }
+
+
   handleNodeClick = (node, active, e) => {
     // accumulate all nodes in the path to root
     let pathToRoot = [{node: active, included: false}];
@@ -63,6 +71,7 @@ export default class App extends Component {
     this.setState(prevState => ({header: {...prevState.header, content}}))
   }
   
+
 
   render() {
     const root = {
@@ -134,7 +143,7 @@ export default class App extends Component {
                       height: `2em`,
                       width: i.mix.interpolate(t => `${el.node.labelWidth * (from*(1-t)+to*t)}px`)
                     }}>
-                      <animated.div style={{cursor: `default`, userSelect: `none`, textAlign: `right`,
+                      <animated.div style={{cursor: `default`, userSelect: `none`, textAlign: `right`, cursor: `pointer`,
                           marginLeft: i.mix.interpolate(t => `${-(1-(from*(1-t)+to*t)) * el.node.labelWidth}px`),
                           opacity: i.mix.interpolate(t => `${el.active? 1 : (from*(1-t)+to*t) * 0.5}`)
                         }}
@@ -151,19 +160,18 @@ export default class App extends Component {
               </Scrollbar>
             )}</Spring>
           </div>
-        
-
-
-
-        
 
         {/* TRENU */}
         <Trenu ref={this.state.trenu}
           style={{width: `100%`, height: `100%`, paddingTop: `4em`, boxSizing: `border-box`}}
-          nodeStyle={{backgroundColor: theme.dark2, color: `white`, fontSize: `1.5em`, border: `0.125em solid white`}}
+          nodeStyle={{backgroundColor: theme.dark2, color: `#666`, fontSize: `1.5em`, border: `0.1em solid #AAA`}}
+          activeStyle={{backgroundColor: theme.dark3, border: `0.1em solid white`}}
+          iconStyle={{opacity: 0.75}}
+          activeIconStyle={{opacity: 1}}
+          labelStyle={{color: `#AAA`}}
           activeLeafStyle={{background: `url(bg.svg)`, backgroundSize: `25em`}}
           nodeSize={100}
-          lineStyle={{backgroundColor: `white`}}
+          lineStyle={{backgroundImage: `linear-gradient(white, #AAA)`}}
           lineWidth={2}
           labelWidth={72}
           maxLineLength={200}
@@ -184,7 +192,7 @@ const appStyle = {
 const headerStyle = {
   width: `100%`,
   height: `4em`,
-  backgroundColor: theme.tWhite,
+  backgroundColor: theme.dark3,
   color: `white`,
   position: `absolute`,
   display: `flex`,
@@ -192,22 +200,39 @@ const headerStyle = {
   alignItems: `center`,
   zIndex: `100`,
   whiteSpace: `nowrap`,
-  boxShadow: `0em 1em 1em rgba(0,0,0,0.01)`
+  boxShadow: `0em 1em 1em rgba(0,0,0,0.01)`,
 }
 
 
 function generateNodePage (content) {
   return (
-  <div style={{
-    boxSizing: `border-box`,
-    width: `100%`,
-    height: `100%`,
-    color: `white`,
-    fontSize: `1em`,
-    padding: `5em ${theme.marginX}`,
-  }}>
+  <Scrollbar style={{
+      width: `100%`,
+      height: `100%`,       
+    }}
+    wrapperRenderer={
+      props => {
+        const {elementRef, style, ...restProps} = props;
+        return <span {...restProps} style={{...style, marginRight: `0`}} ref={elementRef}/>
+    }}
+    trackYRenderer={
+      props => {
+        const {elementRef, style, ...restProps} = props;
+        return <span {...restProps} style={{...style, backgroundColor: `rgba(0,0,0,0.25)`}} ref={elementRef}/>
+    }}
+    thumbYRenderer={
+      props => {
+        const {elementRef, style, ...restProps} = props;
+        return <div {...restProps} style={{...style, backgroundColor: theme.dark3}} ref={elementRef}/>
+    }}
+    contentRenderer={
+      props => {           
+        const {elementRef, style, ...restProps} = props;
+        return <div ref={elementRef} {...restProps} style={{...style, backgroundColor: `white`}}/>
+  }}>    
     lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor 
     lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor 
     lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor 
-  </div>)
+  </Scrollbar>
+  )
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Spring, animated, interpolate } from 'react-spring/renderprops'
+import ReactSVG from 'react-svg'
 
 
 export default class Node extends Component {
@@ -33,11 +34,12 @@ export default class Node extends Component {
       subtree: (!node.visible && criticalPath.indexOf(node) === -1 && criticalPath.indexOf(node.parent) !== -1)? 0 : 1,
       line: (node.visible && node !== this.props.active)? 1 : 0,
       label: (node.expanded || (node.parent && !node.parent.expanded) || this.props.mobileMode)? 0 : 1,
+      mobileLabel: (node.expanded || (node.parent && !node.parent.expanded) || !this.props.mobileMode)? 0 : 1,
       icon: bActiveLeaf? 0 : 1
     }
 
     // responsive parent's span
-    const minDimension = Math.min(this.props.wrapper.width, this.props.wrapper.height);
+    const minDimension = Math.min(this.props.wrapper.width, this.props.wrapper.height - 120 /*TODO: remove magic number*/);
     const offset = this.props.mobileMode? Math.min(this.props.offset/scale, minDimension/scale/2 - size/2 - (borderOffset-size/2)) : (this.props.offset/scale); 
 
     // label placement
@@ -55,8 +57,12 @@ export default class Node extends Component {
       if (tmpAngle == Math.PI) {labelBottomOffset = labelOffset; labelAlignItems = `bottom`;}   // bottom
     }
 
+    // active node?
+    const customNodeStyle = (this.props.active == node)? {...this.props.nodeStyle, ...this.props.activeStyle} : {...this.props.nodeStyle};
+    let customIconStyle = (this.props.active == node)? {...this.props.iconStyle, ...this.props.activeIconStyle} : {...this.props.iconStyle};
+    if (!node.userData.icon) customIconStyle = {...customIconStyle, display: `none`}
+
     const children = node.expanded || node.transforming? (node.children || []) : [];
-    
     // node -> page
     let width = size;
     let height = size;
@@ -75,6 +81,7 @@ export default class Node extends Component {
           subtreeOpacity: 1,
           lineOpacity: 1,
           labelOpacity: 0,
+          mobileLabelOpacity: 0,
           iconOpacity: 1,
           angle: (node.depth > 1)? (this.props.initialAngle || 0) : angle,
           width: this.props.size,
@@ -86,6 +93,7 @@ export default class Node extends Component {
           subtreeOpacity: opacity.subtree,
           lineOpacity: opacity.line,
           labelOpacity: opacity.label,
+          mobileLabelOpacity: opacity.mobileLabel,
           iconOpacity: opacity.icon,
           angle,
           width,
@@ -115,7 +123,7 @@ export default class Node extends Component {
               </animated.div>
               
               {/* POSITION RELATIVE TO PARENT */}
-              <animated.div style={{...wrapperStyle,
+              <animated.div className={'nodeWrapper'} style={{...wrapperStyle,
                 top: interpolate([i.offset, i.angle], (o,a) => `${-Math.cos(-a) * o}px`),
                 left: interpolate([i.offset, i.angle], (o,a) => `${-Math.sin(-a) * o}px`),
                 transform: `translate(-50%, -50%) scale(${scale})`,
@@ -142,9 +150,8 @@ export default class Node extends Component {
                       />);
                   })}
 
-                  
                   {/* LABEL */}
-                  <animated.div style={{
+                  <animated.div style={{ ...this.props.labelStyle,
                     width: `0`,
                     height: `0`,
                     position: `absolute`,
@@ -156,33 +163,39 @@ export default class Node extends Component {
                     transform: `scale(${1/scale})`,
                     opacity: i.labelOpacity.interpolate(o => `${o**opacityExp}`)
                   }}>
-                    <span style={{whiteSpace: `nowrap`, color: `white`, fontSize: `${1/scale}em`}}>{node.userData.label}</span>
+                    <span style={{whiteSpace: `nowrap`, fontSize: `${1/scale}em`}}>{node.userData.label}</span>
+                  </animated.div>
+
+                  {/* MOBILE LABEL */}
+                  <animated.div style={{ ...this.props.labelStyle,
+                    width: `0`,
+                    height: `0`,
+                    position: `absolute`,
+                    top: `${size}px`,
+                    display: `flex`,
+                    justifyContent: `center`,
+                    opacity: i.mobileLabelOpacity.interpolate(o => `${o**opacityExp}`)
+                  }}>
+                    <span style={{width: `${size/scale}px`, overflowWrap: `break-word`, fontSize: `${1/scale}em`}}>{node.userData.label}</span>
                   </animated.div>
 
                   {/* THE NODE */}
-                  <animated.div style={{...nodeDefaultStyle, borderRadius: `50%`, ...nodeStyle,
+                  <animated.div style={{...nodeDefaultStyle, borderRadius: `50%`, ...nodeStyle, ...customNodeStyle,
+                      border: `0px solid black`,
                       width: i.width.interpolate(w => `${w}px`),
                       height: i.height.interpolate(h => `${h}px`),
                       transform: `translate(-50%, -50%) scale(${1/scale})`,
                       opacity: i.nodeOpacity.interpolate(o => `${o**opacityExp}`),
-                      overflow: `hidden`,
-                      color: `white`
+                      overflow: `hidden`
                     }}
                     onClick={(e) => {if (node.visible && !bActiveLeaf) this.props.onClick(node, e)}}
-                    //onMouseOver={(e) => {if (node.parent && !node.parent.transforming && !bActiveLeaf) this.props.onMouseOver(node, e)}}
-                    //onMouseLeave={(e) => {if (node.parent && !node.parent.transforming && !bActiveLeaf) this.props.onMouseLeave(node, e)}}
                     ref={node.ref}
                   >
 
-                    {/* BACKGROUND */}
-                    <animated.div style={{...nodeDefaultStyle,
-                      ...this.props.activeLeafStyle,
-                      position: `absolute`
-                    }}></animated.div>
-
                     {/* BORDER */}
                     <animated.div style={{...borderStyle, ...this.props.style,
-                      border: this.props.style.border,
+                      background: `transparent`,
+                      border: customNodeStyle.border,
                       opacity: i.iconOpacity.interpolate(o => `${o**opacityExp}`)
                     }}></animated.div>  
 
@@ -190,10 +203,15 @@ export default class Node extends Component {
                     <animated.div style={{...iconStyle,
                       width: `${iconSize}px`,
                       height: `${iconSize}px`,
-                      backgroundImage: `url(${node.userData.icon})`,
                       transform: `scale(${1/scale})`,
-                      opacity: i.iconOpacity.interpolate(o => `${o**opacityExp}`)
-                    }}></animated.div>
+                      ...customIconStyle
+                    }}>
+                      <animated.img  src={node.userData.icon} style={{
+                        width: `50%`,
+                        height: `50%`,
+                        opacity: i.iconOpacity.interpolate(o => `${o**opacityExp}`)
+                      }}/>
+                    </animated.div>
                     
                     {/* VALUE */}
                     <animated.div style={{
@@ -206,12 +224,18 @@ export default class Node extends Component {
 
                     {/* CONTENT */}
                     <animated.div style={{
+                      display: i.iconOpacity.interpolate(o => {return (1-o)>0? `block` : `none`}),
+                      fontSize: `1rem`,
                       position: `absolute`,
+                      zIndex: 101,
                       color: `inherit`,
-                      backgroundColor: `red`,
+                      cursor: `default`,
+                      userSelect: `text`,
+                      overflow: `hidden`,
                       width: `${this.props.wrapper.width}px`,
                       height: `${this.props.wrapper.height}px`,
-                      opacity: i.iconOpacity.interpolate(o => `${(1-o)**opacityExp}`)
+                      opacity: i.iconOpacity.interpolate(o => `${(1-o)**opacityExp}`),
+                      transform: `scale(1/${scale})`
                     }}>
                       {node.userData.content}
                     </animated.div>
@@ -238,7 +262,7 @@ const nodeDefaultStyle = {
   display: `flex`,
   justifyContent: `center`,
   alignItems: `center`,
-  cursor: `default`,
+  cursor: `pointer`,
   userSelect: `none`,
   backgroundPosition: `center center`
 }
@@ -248,7 +272,9 @@ const iconStyle = {
   backgroundSize: `50% 50%`,
   backgroundRepeat: `no-repeat`,
   backgroundPosition: `center center`,
-  fill: `white`
+  display: `flex`,
+  alignItems: `center`,
+  justifyContent: `center`
 }
 
 const nodeStyle = {
@@ -256,7 +282,8 @@ const nodeStyle = {
   top: `0`,
   left: `0`,
   zIndex: `100`,
-  border: `0px solid black`
+  border: `0px solid black`,
+  transition: `background 0.4s`
 }
 
 const borderStyle = {
@@ -266,7 +293,6 @@ const borderStyle = {
   position: `absolute`,
   borderRadius: `50%`
 }
-
 
 const cornerStyle = {
   position: `absolute`,
