@@ -16,17 +16,19 @@ export default class ContentWrapper extends Component {
         trackYRenderer={
           props => {
             const {elementRef, style, ...restProps} = props;
-            return <span {...restProps} style={{...style, backgroundColor: `rgba(0,0,0,0.25)`}} ref={elementRef}/>
+            return <span {...restProps} style={{...style, backgroundColor: this.props.theme.scrollbar.track}} ref={elementRef}/>
         }}
         thumbYRenderer={
           props => {
             const {elementRef, style, ...restProps} = props;
-            return <div {...restProps} style={{...style, backgroundColor: 'black'}} ref={elementRef}/>
+            return <div {...restProps} style={{...style, backgroundColor: this.props.theme.scrollbar.thumb}} ref={elementRef}/>
         }}
         contentRenderer={
           props => {           
             const {elementRef, style, ...restProps} = props;
-            return <div ref={elementRef} {...restProps} style={{...style, backgroundColor: `white`}}/>
+            return <div ref={elementRef} {...restProps} 
+              style={{...style, backgroundColor: this.props.theme.bg, color: this.props.theme.text
+            }}/>
       }}>
         {this.props.children}
       </Scrollbar>

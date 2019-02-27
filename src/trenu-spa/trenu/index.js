@@ -6,21 +6,21 @@ export default class Trenu extends Component {
   config = {
     size: this.props.nodeSize || 72,
     scale: this.props.scaling || 0.618,
-    span: this.props.maxLineLength || 200,
-    borderOffset: this.props.borderOffset || this.props.nodeSize/2 * 1.25,
-    labelOffset: this.props.labelOffset || this.props.nodeSize/2 * 1.5,
+    span: (this.props.maxLineLength / (this.props.scaling || 0.618) || 200),
+    labelOffset: this.props.labelOffset || 8,
     labelStyle: this.props.labelStyle,
     iconStyle: this.props.iconStyle,
     activeIconStyle: this.props.activeIconStyle,
     nodeStyle: this.props.nodeStyle,
     activeStyle: this.props.activeStyle,
-    labelWidth: this.props.labelWidth || 72,
     lineWidth: this.props.lineWidth || 2,
     lineStyle: this.props.lineStyle,
-    activeLeafStyle: this.props.activeLeafStyle,
+    contentWrapperTheme: this.props.contentWrapperTheme,
     angle: 0
   }
   
+  //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  // LIFECYCLE
 
   constructor(props) {
     super(props);
@@ -80,8 +80,6 @@ export default class Trenu extends Component {
         width: -1,
         height: -1
       },
-      mouseOver: null,
-      mouseOverLabel: '',
       mobileMode: false,
       animate: false
     }
@@ -94,18 +92,21 @@ export default class Trenu extends Component {
     this.state.nodes.forEach(node => {     
       node.labelWidth = node.labelDummyRef.current.offsetWidth;
     })
+    
     this.setState({nodes: this.state.nodes});
-
     this.handleResize();
   }
    
   
+  //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  // PUBLIC
+
   getRootNode() {
     return this.state.root;
   }
 
 
-  handleExternalActiveChange = (newActive, e) => {
+  changeActiveNode = (newActive, e) => {
     // collapse and hide all nodes
     this.state.nodes.forEach(node => {node.expanded = false; node.visible = false;});
     this.state.active.transforming = true;
@@ -127,6 +128,9 @@ export default class Trenu extends Component {
     this.setState({nodes: this.state.nodes, active: newActive, animate: true});
   }
 
+
+  //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  // HANDLERS
 
   handleClick = (node, e) => {
     let active = this.state.active;
@@ -174,22 +178,12 @@ export default class Trenu extends Component {
       })
     }
     
-    // users action
+    // user action
     if (node.userData.action) {
       node.userData.action(node, active, e);
     } else if (this.props.defaultAction) {
       this.props.defaultAction(node, active, e);
     }
-  }
-
-
-  handleMouseOver = (node, e) => {
-    this.setState({mouseOver: node, mouseOverLabel: node.userData.label});
-  }
-
-
-  handleMouseLeave = (node, e) => {
-    this.setState({mouseOver: null});
   }
 
 
@@ -204,7 +198,12 @@ export default class Trenu extends Component {
     const width = parseInt(style.getPropertyValue("width")) - parseInt(style.getPropertyValue("padding-left") || 0) - parseInt(style.getPropertyValue("padding-right") || 0);
     const height = parseInt(style.getPropertyValue("height")) - parseInt(style.getPropertyValue("padding-top") || 0) - parseInt(style.getPropertyValue("padding-bottom") || 0);        
 
-    const mobileMode = this.config.span * 2 + this.config.borderOffset + this.config.labelWidth * 2 > Math.min(width, height);
+    let maxLabelWidth = 0;
+    this.state.nodes.forEach(node => {     
+      if (node.labelWidth > maxLabelWidth) maxLabelWidth = node.labelWidth;
+    })
+    
+    const mobileMode = ((this.config.size) * this.config.scale + this.config.span + this.config.labelOffset + maxLabelWidth) * 2 > width;    
 
     this.setState((prevState) => ({
       wrapper: {
@@ -221,11 +220,19 @@ export default class Trenu extends Component {
   }
 
 
-  includeContent = () => {
+  //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  // JSX
+
+  injectContent = () => {
     if (this.state.wrapper.ref) {
       return (
         <React.Fragment>
-          <Canvas animate={this.state.animate} focusOn={this.state.active} scaling={this.config.scale} nodeSize={this.config.size}>
+          <Canvas
+            style={this.props.canvasStyle}
+            animate={this.state.animate}
+            focusOn={this.state.active}
+            scaling={this.config.scale}
+            nodeSize={this.config.size}>
             <Node
               style={this.props.nodeStyle}
               onClick={this.handleClick}
@@ -262,12 +269,12 @@ export default class Trenu extends Component {
         {/* DETERMINE LABELS WIDTH */}
         <div style={{visibility: `hidden`, position: `absolute`}}>
           {this.state.nodes.map((node, index) => (
-            <span style={{whiteSpace: `nowrap`}} ref={node.labelDummyRef} key={index}>{node.userData.label}</span>
+            <span style={{...this.config.labelStyle, whiteSpace: `nowrap`}} ref={node.labelDummyRef} key={index}>{node.userData.label}</span>
           ))}
         </div>
 
         {/* CORE */}
-        {this.includeContent()}
+        {this.injectContent()}
       </div>
     )
   }

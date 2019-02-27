@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "color": "^3.1.0",
     "kas-scrollable": "^1.0.2",
     "react": "^16.8.1",
     "react-custom-scrollbars": "^4.2.1",

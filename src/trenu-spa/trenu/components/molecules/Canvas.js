@@ -22,7 +22,7 @@ export default class Canvas extends Component {
     return (
       <Spring immediate={!this.props.animate} native to={{x, y, scale}}>{i => (
         <React.Fragment>
-          <animated.div style={{...canvasBgStyle,
+          <animated.div style={{...canvasBgStyle, ...this.props.style,
             transform: interpolate([i.x, i.y, i.scale], (ix, iy, is) => `translate(${ix * is}px, ${iy * is}px) scale(${is})`)}}>
           </animated.div>
           <animated.div style={{...canvasStyle,
@@ -45,9 +45,7 @@ const canvasStyle = {
 }
 
 const canvasBgStyle = {
-  width: `1000%`,
-  height: `1000%`,
-  position: `absolute`,
-  background: `url(bg.png)`,
-  backgroundSize: `25em`
+  width: `200%`,
+  height: `200%`,
+  position: `absolute`
 }

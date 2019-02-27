@@ -5,7 +5,7 @@ import Projects3D from './components/pages/Projects3D'
 export default class App extends Component {
   render() {
     return (
-      <TrenuSpa dark>
+      <TrenuSpa style={{minWidth: '300px', minHeight: '400px'}}>
         {{
           label: <React.Fragment>ARKADIUSZ <span style={{fontWeight: `bold`}}>KASPRZYK</span></React.Fragment>,
           icon: "/icons/person.png",

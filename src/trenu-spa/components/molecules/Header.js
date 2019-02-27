@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Spring, animated } from 'react-spring/renderprops'
 import Scrollbar from 'react-scrollbars-custom';
+import Color from 'color'
+
 
 export default class Header extends Component {
   render() {
@@ -39,22 +41,28 @@ export default class Header extends Component {
 					// determine key values of transition
 					const from = (el.collapsing || (!el.collapsing && !el.expanding))? 1 : 0;
 					const to = el.collapsing? 0 : 1;
+
 					return (
 						<span style={{display: `inline-flex`, alignItems: `center`}}>
 
 							{/* LINE */}
-							<animated.div style={{cursor: `default`, userSelect: `none`, display, alignItems: `center`, justifyContent: `center`, overflow: `hidden`,
+							<animated.div style={{ ...this.props.labelStyle, userSelect: `none`, display, alignItems: `center`, justifyContent: `center`, overflow: `hidden`,
 								width: i.mix.interpolate(t => `${(from*(1-t)+to*t)}em`),
-								opacity: i.mix.interpolate(t => `${(from*(1-t)+to*t) * 0.5}`)
+								opacity: i.mix.interpolate(t => `${(from*(1-t)+to*t)}`),
+								color: this.props.labelStyle.color || 'inherit'
 							}}>|</animated.div>
 
 							{/* LABEL */}
-							<animated.div style={{display: `inline-flex`, alignItems: `center`, overflow: `hidden`, height: `2em`,
+							<animated.div style={{height: `2em`, ...this.props.labelStyle, display: `inline-flex`, alignItems: `center`, overflow: `hidden`,
 								width: i.mix.interpolate(t => `${el.node.labelWidth * (from*(1-t)+to*t)}px`)
 							}}>
-								<animated.div style={{cursor: `default`, userSelect: `none`, textAlign: `right`, cursor: `pointer`,
+								<animated.div style={{userSelect: `none`, textAlign: `right`, cursor: `pointer`,
 									marginLeft: i.mix.interpolate(t => `${-(1-(from*(1-t)+to*t)) * el.node.labelWidth}px`),
-									opacity: i.mix.interpolate(t => `${el.active? 1 : (from*(1-t)+to*t) * 0.5}`)
+									opacity: i.mix.interpolate(t => `${el.active? 1 : (from*(1-t)+to*t) }`),
+									color: i.mix.interpolate(t => {
+										const mix = el.active? 1 : 0;
+										return Color(this.props.labelStyle.color).mix(Color(this.props.activeLabelStyle.color), mix);
+									})
 								}}
 								onClick={(e) => {this.props.onLabelClick(el.node);}}>
 									{el.node.userData.label}
@@ -73,12 +81,11 @@ const style = {
 	boxSizing: `border-box`,
 	width: `100%`,
 	height: `4em`,
-	padding: `0.25em 0.5em`,
+	padding: `0.25em 8px`,
 	color: `white`,
 	position: `absolute`,
 	display: `flex`,
 	alignItems: `center`,
 	zIndex: `300`,
-	whiteSpace: `nowrap`,
-	boxShadow: `0em 1em 1em rgba(0,0,0,0.01)`,
+	whiteSpace: `nowrap`
 }

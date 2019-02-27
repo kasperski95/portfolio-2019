@@ -3,9 +3,9 @@ import { Spring, animated, interpolate } from 'react-spring/renderprops'
 import ContentWrapper from '../atoms/ContentWrapper'
 
 export default class Node extends Component {
-  injectNodeContent(node, active) {
+  injectNodeContent = (node, active) => {
     if (node.userData.content && node == active)
-      return <ContentWrapper>{node.userData.content}</ContentWrapper>;
+      return <ContentWrapper theme={this.props.contentWrapperTheme}>{node.userData.content}</ContentWrapper>;
   }
 
   render() {
@@ -22,16 +22,12 @@ export default class Node extends Component {
     // init
     const node = this.props.state;
     const size = this.props.size;
-    const iconSize = this.props.size * 0.75;
-    const borderOffset = this.props.borderOffset;
     const scale = this.props.scale;
     const angle = this.props.angle;
-
     const bActiveLeaf = (node == this.props.active && node.children.length == 0);
-    const labelOffset = this.props.labelOffset / scale;
+    const labelOffset = size + this.props.labelOffset / scale;
     const span = node.expanded? this.props.span : 0;
     const angleDelta = node.children? (2 * Math.PI / node.children.length) : 0;
-    
     const opacityExp = 4; // transition speed
     const opacity = {
       node: (!node.visible && criticalPath.indexOf(node) !== -1)? 0 : 1,
@@ -43,8 +39,9 @@ export default class Node extends Component {
     }
 
     // responsive parent's span
-    const minDimension = Math.min(this.props.wrapper.width, this.props.wrapper.height - 120 /*TODO: remove magic number*/);
-    const offset = this.props.mobileMode? Math.min(this.props.offset/scale, minDimension/scale/2 - size/2 - (borderOffset-size/2)) : (this.props.offset/scale); 
+    const minDimension = Math.min(this.props.wrapper.width, (this.props.mobileMode)? this.props.wrapper.height - (labelOffset-size/2) - 16 : this.props.wrapper.height) - 16;
+    let offset = Math.min(this.props.offset/scale, minDimension/scale/2 - size/2 - (labelOffset-size/2)); 
+    if (this.props.mobileMode) offset = Math.min(this.props.offset/scale, minDimension/scale/2 - size/2); 
 
     // label placement
     let labelRightOffset = 0;
@@ -74,6 +71,7 @@ export default class Node extends Component {
       height = width = Math.sqrt(this.props.wrapper.width**2 + this.props.wrapper.height**2); 
     }
   
+    //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
     return (
       <Spring
@@ -175,7 +173,7 @@ export default class Node extends Component {
                     width: `0`,
                     height: `0`,
                     position: `absolute`,
-                    top: `${size}px`,
+                    top: `${labelOffset}px`,
                     display: `flex`,
                     justifyContent: `center`,
                     opacity: i.mobileLabelOpacity.interpolate(o => `${o**opacityExp}`)
@@ -186,28 +184,26 @@ export default class Node extends Component {
                   {/* THE NODE */}
                   <animated.div style={{...nodeDefaultStyle, borderRadius: `50%`, ...nodeStyle, ...customNodeStyle,
                       border: `0px solid black`,
+                      backgroundColor: this.props.contentWrapperTheme.bg,
                       width: i.width.interpolate(w => `${w}px`),
                       height: i.height.interpolate(h => `${h}px`),
                       transform: `translate(-50%, -50%) scale(${1/scale})`,
                       opacity: i.nodeOpacity.interpolate(o => `${o**opacityExp}`),
-                      overflow: `hidden`
                     }}
                     onClick={(e) => {if (node.visible && !bActiveLeaf) this.props.onClick(node, e)}}
                     ref={node.ref}
                   >
 
                     {/* BORDER */}
-                    <animated.div style={{...borderStyle, ...this.props.style,
-                      background: `transparent`,
+                    <animated.div style={{...borderStyle, ...customNodeStyle,
                       border: customNodeStyle.border,
                       opacity: i.iconOpacity.interpolate(o => `${o**opacityExp}`)
                     }}></animated.div>  
 
                     {/* ICON */}
                     <animated.div style={{...iconStyle,
-                      width: `${iconSize}px`,
-                      height: `${iconSize}px`,
-                      transform: `scale(${1/scale})`,
+                      width: `${size}px`,
+                      height: `${size}px`,
                       ...customIconStyle
                     }}>
                       <animated.div style={{
@@ -217,7 +213,6 @@ export default class Node extends Component {
                         backgroundSize: `contain`,
                         backgroundRepeat: `no-repeat`,
                         backgroundPosition: `center center`,
-                        
                         opacity: i.iconOpacity.interpolate(o => `${o**opacityExp}`)
                       }}/>
                     </animated.div>
@@ -236,7 +231,6 @@ export default class Node extends Component {
                       display: i.iconOpacity.interpolate(o => {return (1-o)>0? `block` : `none`}),
                       fontSize: `1rem`,
                       position: `absolute`,
-                      color: `inherit`,
                       cursor: `default`,
                       userSelect: `text`,
                       overflow: `hidden`,
@@ -295,16 +289,8 @@ const nodeStyle = {
 }
 
 const borderStyle = {
-  boxSizing: `border-box`,
   width: `100%`,
   height: `100%`,
   position: `absolute`,
   borderRadius: `50%`
-}
-
-const cornerStyle = {
-  position: `absolute`,
-  width: `0.5em`,
-  height: `0.5em`,
-  boxSizing: `border-box`
 }
