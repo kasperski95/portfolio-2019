@@ -41,6 +41,7 @@ export default class Trenu extends Component {
 
     //generate data structure to work with (BFS)
     let root = {...nodeObject, userData: props.seedData, children: [], expanded: true, visible: true, depth: 0, ref: React.createRef(), labelDummyRef: React.createRef()};
+    let active = root;
     let nodes = [root];
     let queue = [];
     let maxHeight = 0;
@@ -54,6 +55,9 @@ export default class Trenu extends Component {
     while (queue.length) {
       const node = queue.shift();
       nodes.push(node);
+
+      if (node.userData.active) active = node;
+
       if (node.userData.children) {
         node.userData.children.forEach((child) => {
           if (queue.indexOf(child) === -1) {
@@ -73,7 +77,7 @@ export default class Trenu extends Component {
     this.state = {
       nodes,
       root,
-      active: root,
+      active,
       wrapper: {
         ref: React.createRef(),
         mounted: false,
@@ -82,6 +86,10 @@ export default class Trenu extends Component {
       },
       mobileMode: false,
       animate: false
+    }
+
+    if (active !== root) {
+      this.changeActiveNode(active);
     }
   }
 
@@ -103,6 +111,18 @@ export default class Trenu extends Component {
 
   getRootNode() {
     return this.state.root;
+  }
+
+
+  getCriticalPath(node=null) {
+    if (!node) node = this.state.active;
+    let result = [];
+    let tmp = node;
+    while (tmp) {
+      result.push(tmp);
+      tmp = tmp.parent;
+    }
+    return result;
   }
 
 

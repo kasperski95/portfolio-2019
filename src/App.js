@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import TrenuSpa from './trenu-spa'
 import Projects3D from './components/pages/Projects3D'
+import Timeline from './components/pages/Timeline'
 
 export default class App extends Component {
   render() {
@@ -19,7 +20,7 @@ export default class App extends Component {
               {label: "CONTACT@ARKADIUSZKASPRZYK.PL"},
               {label: "LINKEDIN"},
             ]},
-            {label: "TIMELINE", icon: "/icons/timeline.png"},
+            {label: "TIMELINE", icon: "/icons/timeline.png", content: <Timeline/>, active: true},
             {label: "IT", icon: "/icons/code.png", children: [
               {label: "PROJECTS"},
               {label: "SKILLS"}

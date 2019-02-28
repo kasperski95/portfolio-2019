@@ -6,25 +6,24 @@ import Header from './components/molecules/Header'
 export default class App extends Component { 
   state = {
     trenu: React.createRef(),
-    header: {
-      content: [],
-      scrollbarRef: React.createRef()
-    }
+    headerContent: []
   }
 
   
   constructor(props) {
     super(props);
 
-    this.theme = brightTheme; //(this.props.dark)
+    this.theme = brightTheme; //TODO: (this.props.dark)
   }
 
 
   componentDidMount() {
-    const root = this.state.trenu.current.getRootNode();
-    this.setState(prevState => ({
-      header: {...prevState.header, content: [{node: root, expanding: false, collapsing: false, active: true}]}
-    }))
+    const criticalPath = this.state.trenu.current.getCriticalPath().reverse();
+    let headerContent = [];
+    criticalPath.forEach((node, index) => {
+      headerContent.push({node, expanding: false, collapsing: false, active: index == criticalPath.length - 1});
+    })
+    this.setState({headerContent});
   }
 
 
@@ -48,28 +47,28 @@ export default class App extends Component {
     pathToRoot.reverse();
 
     // determine animation & combine old and new labels
-    let content = [];
-    for(let i = 0; i < this.state.header.content.length; i++) {
+    let headerContent = [];
+    for(let i = 0; i < this.state.headerContent.length; i++) {
       let skipInclude = false;
       for (let j = 0; j < pathToRoot.length; j++) {   
-        if (this.state.header.content[i].node === pathToRoot[j].node && !this.state.header.content[i].collapsing) {
+        if (this.state.headerContent[i].node === pathToRoot[j].node && !this.state.headerContent[i].collapsing) {
           pathToRoot[j].included = true;
           const active = (j === pathToRoot.length - 1);
-          content.push({node: pathToRoot[j].node, expanding: false, collapsing: false, active});
+          headerContent.push({node: pathToRoot[j].node, expanding: false, collapsing: false, active});
           skipInclude = true;
           break;
         }
       }
-      if (!skipInclude && !this.state.header.content[i].collapsing)
-        content.push({node: this.state.header.content[i].node, expanding: false, collapsing: true, active: false});
+      if (!skipInclude && !this.state.headerContent[i].collapsing)
+      headerContent.push({node: this.state.headerContent[i].node, expanding: false, collapsing: true, active: false});
     }    
     pathToRoot.forEach((el, index) => {
       const active = (index === pathToRoot.length - 1);
-      if (!el.included) content.push({node: el.node, expanding: true, collapsing: false, active});
+      if (!el.included) headerContent.push({node: el.node, expanding: true, collapsing: false, active});
     });    
 
     // update state
-    this.setState(prevState => ({header: {...prevState.header, content}}))
+    this.setState({headerContent})
   }
   
 
@@ -89,7 +88,7 @@ export default class App extends Component {
           scrollbarThumbStyle={{backgroundColor: theme.header.scrollbar.thumb}}
           onLabelClick={this.handleLabelClick}
         >
-          {this.state.header.content}
+          {this.state.headerContent}
         </Header>
 
         <Trenu
