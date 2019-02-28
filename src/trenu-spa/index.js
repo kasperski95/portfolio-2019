@@ -52,9 +52,9 @@ export default class App extends Component {
     for(let i = 0; i < this.state.header.content.length; i++) {
       let skipInclude = false;
       for (let j = 0; j < pathToRoot.length; j++) {   
-        if (this.state.header.content[i].node == pathToRoot[j].node && !this.state.header.content[i].collapsing) {
+        if (this.state.header.content[i].node === pathToRoot[j].node && !this.state.header.content[i].collapsing) {
           pathToRoot[j].included = true;
-          const active = (j == pathToRoot.length - 1);
+          const active = (j === pathToRoot.length - 1);
           content.push({node: pathToRoot[j].node, expanding: false, collapsing: false, active});
           skipInclude = true;
           break;
@@ -64,7 +64,7 @@ export default class App extends Component {
         content.push({node: this.state.header.content[i].node, expanding: false, collapsing: true, active: false});
     }    
     pathToRoot.forEach((el, index) => {
-      const active = (index == pathToRoot.length - 1);
+      const active = (index === pathToRoot.length - 1);
       if (!el.included) content.push({node: el.node, expanding: true, collapsing: false, active});
     });    
 

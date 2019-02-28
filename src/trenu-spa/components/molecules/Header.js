@@ -10,6 +10,7 @@ export default class Header extends Component {
 		<div style={{...style, ...this.props.style}}><Spring native reset from={{mix: 0}} to={{mix: 1}}>{i => (
 
 			<Scrollbar style={{width: '100%', height: '100%'}}
+				removeTracksWhenNotUsed={true}
 
 				trackXRenderer={props => {
 					const {elementRef, style, ...restProps} = props;
@@ -36,7 +37,7 @@ export default class Header extends Component {
 				{this.props.children.map((el, index) => {
 
 					// hide line for the first element
-					const display = (index == 0)? `none` : `inline-flex`;
+					const display = (index === 0)? `none` : `inline-flex`;
 
 					// determine key values of transition
 					const from = (el.collapsing || (!el.collapsing && !el.expanding))? 1 : 0;
@@ -87,5 +88,6 @@ const style = {
 	display: `flex`,
 	alignItems: `center`,
 	zIndex: `300`,
-	whiteSpace: `nowrap`
+	whiteSpace: `nowrap`,
+	boxShadow: `0em 0.1em 1em rgba(0,0,0,0.1)`
 }

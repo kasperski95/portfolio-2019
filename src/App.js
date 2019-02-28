@@ -12,7 +12,7 @@ export default class App extends Component {
           children: [
             {label: "3D", icon: "/icons/cube.png", children: [
             {label: "PROJECTS PROJECTS PROJECTS", value: 1, content: <Projects3D/>},
-              {label: "SKILLS", children: [{}, {}, {}]}
+              {label: "SKILLS", children: [{value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}]}
             ]},
             {label: "CONTACT", icon: "/icons/device-mobile.png", children: [
               {label: "790588598"},

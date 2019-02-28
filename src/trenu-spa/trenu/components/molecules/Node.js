@@ -4,7 +4,7 @@ import ContentWrapper from '../atoms/ContentWrapper'
 
 export default class Node extends Component {
   injectNodeContent = (node, active) => {
-    if (node.userData.content && node == active)
+    if (node.userData.content && node === active)
       return <ContentWrapper theme={this.props.contentWrapperTheme}>{node.userData.content}</ContentWrapper>;
   }
 
@@ -24,7 +24,7 @@ export default class Node extends Component {
     const size = this.props.size;
     const scale = this.props.scale;
     const angle = this.props.angle;
-    const bActiveLeaf = (node == this.props.active && node.children.length == 0);
+    const bActiveLeaf = (node === this.props.active && node.children.length === 0);
     const labelOffset = size + this.props.labelOffset / scale;
     const span = node.expanded? this.props.span : 0;
     const angleDelta = node.children? (2 * Math.PI / node.children.length) : 0;
@@ -55,21 +55,24 @@ export default class Node extends Component {
       if (tmpAngle > 2 * Math.PI) tmpAngle -= 2 * Math.PI;
       if (tmpAngle < Math.PI) {labelRightOffset = labelOffset; labelTextAlign = `flex-start`;}  // right
       if (tmpAngle > Math.PI) {labelRightOffset = -labelOffset; labelTextAlign = `flex-end`;}   // left
-      if (tmpAngle == Math.PI) {labelBottomOffset = labelOffset; labelAlignItems = `bottom`;}   // bottom
+      if (tmpAngle === Math.PI) {labelBottomOffset = labelOffset; labelAlignItems = `bottom`;}   // bottom
     }
 
     // active node?
-    const customNodeStyle = (this.props.active == node)? {...this.props.nodeStyle, ...this.props.activeStyle} : {...this.props.nodeStyle};
-    let customIconStyle = (this.props.active == node)? {...this.props.iconStyle, ...this.props.activeIconStyle} : {...this.props.iconStyle};
+    const customNodeStyle = (this.props.active === node)? {...this.props.nodeStyle, ...this.props.activeStyle} : {...this.props.nodeStyle};
+    let customIconStyle = (this.props.active === node)? {...this.props.iconStyle, ...this.props.activeIconStyle} : {...this.props.iconStyle};
     if (!node.userData.icon) customIconStyle = {...customIconStyle, display: `none`}
 
     const children = node.expanded || node.transforming? (node.children || []) : [];
     // node -> page
     let width = size;
     let height = size;
-    if (children.length == 0 && node == this.props.active) {
+    if (children.length === 0 && node === this.props.active) {
       height = width = Math.sqrt(this.props.wrapper.width**2 + this.props.wrapper.height**2); 
     }
+
+    // angle offset - make sure that the space between top and bottom part of tree is the same
+    const angleOffset = (children.length % 2 === 0)? (angleDelta / 2) : (angleDelta / 4);
   
     //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -120,7 +123,8 @@ export default class Node extends Component {
                   transformOrigin: `0% 0%`,
                   transform: i.angle.interpolate(a => `rotate(${a + Math.PI}rad) translate(-${this.props.lineWidth/2 || 1}px, ${size/scale/2}px)`),
                   zIndex: `50`,
-                  opacity: i.lineOpacity.interpolate(o => `${o**opacityExp}`)
+                  opacity: i.lineOpacity.interpolate(o => `${o**opacityExp}`),
+                  display: i.lineOpacity.interpolate(o => (o > 0)? `block` : `none`)
                 }}>
               </animated.div>
               
@@ -135,7 +139,7 @@ export default class Node extends Component {
 
                   {/* RECURENCE */}
                   {children.map((value, index, array) => {
-                    let childAngle = (angleDelta * index + angleDelta/2);
+                    let childAngle = (angleDelta * index + angleOffset);
                     
                     // minimize rotation
                     if (childAngle < angle - Math.PI) childAngle += 2 * Math.PI;
