@@ -10,7 +10,8 @@ export default class Chain extends Component {
 			nodes: this.props.children.nodes || [],
 			processes: this.props.children.processes || [],
 			spacing: this.props.spacing || 100,
-			nodeSize: this.props.nodeSize || 48
+			nodeSize: this.props.nodeSize || 48,
+			lineWidth: this.props.lineWidth || 2
 		}
 	}
 
@@ -20,32 +21,44 @@ export default class Chain extends Component {
 	
 	getWrapper = (props) => {
 		const { style, ...rest } = props;
-		props = {...rest, style: { ...style,
-			backgroundColor: `rgba(255, 0, 0, 0.1)`,
+		props = {...rest, style: {
 			width: `100%`,
 			maxWidth: `40em`,
-			margin: `0em auto`
-		}}; return this.props.wrapperRenderer? this.props.wrapperRenderer(props) : <div {...props}/>;
+			padding: `0em 0.5em`,
+			margin: `0em auto`,
+			...style,
+			...this.props.style,
+		}};
+		
+		return this.props.wrapperRenderer? this.props.wrapperRenderer(props) : <div {...props}/>;
 	}
+
 
 	getElementWrapper = (props) => {
 		const { style, ...rest } = props;
-		props = {...rest, style: { ...style,
-			backgroundColor: `rgba(255, 0, 0, 0.1)`,
+		props = {...rest, style: {
 			height: `${this.getProps().nodeSize}px`,
-			position: `relative`
-		}}; return this.props.nodeWrapperRenderer? this.props.nodeWrapperRenderer(props) : <div {...props}/>;
+			position: `relative`,
+			...style
+		}};
+		
+		return this.props.nodeWrapperRenderer? this.props.nodeWrapperRenderer(props) : <div {...props}/>;
 	}
+
 
 	getLine = (props) => {
 		const { style, ...rest } = props;
-		props = {...rest, style: { ...style,
-			width: `0.125em`,
+		props = {...rest, style: { 
+			width: `${this.getProps().lineWidth}px`,
 			height: `${this.getProps().spacing}px`,
 			margin: `0em auto`,
-			backgroundColor: `rgba(0, 0, 0, 0.1)`,
-		}}; return this.props.lineRenderer? this.props.lineRenderer(props) : <div {...props}/>;
+			backgroundColor: `red`,
+			...style,
+		}};
+		
+		return this.props.lineRenderer? this.props.lineRenderer(props) : <div {...props}/>;
 	}
+
 
 	getScrollbar = props => {
 		const { style, ...rest } = props;
@@ -54,36 +67,88 @@ export default class Chain extends Component {
 			height: `calc(${this.getProps().nodeSize + this.getProps().spacing}px - 0.5em)`,
 			position: `absolute`,
 			top: `${this.getProps().nodeSize/2}px`,
-			transform: `translate(0%, -50%)`
+			transform: `translate(0%, -50%)`,
+			overflow: `hidden`
 		}};
-		return this.props.scrollbarRenderer? this.props.scrollbarRenderer(props) : <CustomScrollbar {...props}/>;
+
+		return this.props.scrollbarRenderer? this.props.scrollbarRenderer(props) : <div {...props}/>;
 	}
 
+
 	getLabel = (props) => {
+		if (!props.children) return null;
+
 		const { style, ...rest } = props;
 		props = {...rest, style: { ...style,
 			width: `100%`,
 			minHeight: `100%`,
 			padding: `0em 0.5em`,
 			boxSizing: `border-box`,
-			backgroundColor: `rgba(255, 0, 0, 0.1)`,
 			display: `flex`,
 			alignItems: 'center'			
-		}}; return this.props.labelRenderer? this.props.labelRenderer(props) : <div {...props}/>;
+		}};
+		
+		return this.props.labelRenderer? this.props.labelRenderer(props) : <div {...props}/>;
 	}
+
+
+	getSide = (props) => {
+		const Scrollbar = (props) => this.getScrollbar(props);
+		const Label = (props) => this.getLabel(props);
+
+		if (props.right && props.children)
+			return <Scrollbar style={{right: '0px'}}>
+				<Label>{props.children}</Label>
+			</Scrollbar>
+
+		if (props.children)
+			return <Scrollbar style={{left: '0px'}}>
+				<Label style={{justifyContent: 'flex-end'}}>{props.children}</Label>
+			</Scrollbar>
+
+		return null;
+	}
+
 
 	getNode = (props) => {
 		const nodeSize = this.getProps().nodeSize;
 		const { style, ...rest } = props;
-		props = {...rest, style: { ...style,
-			backgroundColor: `rgba(255, 0, 0, 0.1)`,
-			width: `${nodeSize}px`,
-			height: `${nodeSize}px`,
-			position: `absolute`,
-			left: `50%`,
-			transform: `translate(-50%, 0%)`,
-			borderRadius: `50%`,
-		}}; return this.props.nodeRenderer? this.props.nodeRenderer(props) : <div {...props}/>;
+		const lineWidth = this.getProps().lineWidth;
+
+		if (props.type === 'dots') {
+			const dotStyle = {
+				backgroundColor: `red`,
+				width: `${lineWidth}px`,
+				height: `${lineWidth}px`,
+				margin: `${(nodeSize - lineWidth * 3)/4}px 0px`,
+				borderRadius: `50%`,
+				transform: `translate(-50%, 0%)`,
+			}
+			props = {...rest, style: { ...style, 
+				width: `0px`,
+				height: `${nodeSize}px`,
+				position: `absolute`,
+				backgroundColor: `rgba(255,0,0,0.1)`,
+				left: `50%`
+			}};
+			return this.props.nodeRenderer? this.props.nodeRenderer(props) : <div {...props}>
+				<div style={dotStyle}></div>
+				<div style={dotStyle}></div>
+				<div style={dotStyle}></div>
+			</div>;
+
+		} else {
+			props = {...rest, style: { ...style,
+				backgroundColor: `rgba(255, 0, 0, 0.1)`,
+				width: `${nodeSize}px`,
+				height: `${nodeSize}px`,
+				position: `absolute`,
+				left: `50%`,
+				transform: `translate(-50%, 0%)`,
+				borderRadius: `50%`,
+			}};
+			return this.props.nodeRenderer? this.props.nodeRenderer(props) : <div {...props}/>;
+		}
 	}
 
 	//---------------------------------------------------------------------------------------
@@ -92,25 +157,23 @@ export default class Chain extends Component {
 		const Wrapper = (props) => this.getWrapper(props);
 		const ElementWrapper = (props) => this.getElementWrapper(props);
 		const Line = (props) => this.getLine(props);
-		const Scrollbar = (props) => this.getScrollbar(props);
-		const Label = (props) => this.getLabel(props);
+		const Side = (props) => this.getSide(props);
 		const Node = (props) => this.getNode(props);
 
 		const props = this.getProps();
 
     return (
-      <Wrapper>{props.nodes.map(node => {
+      <Wrapper>{props.nodes.map((node, index) => {
+				const lineDisplay = (index === 0)? 'none' : 'block';
+				const lineHeight = (node.halfLine)? props.spacing : props.spacing/2;
+
 				return (
 					<React.Fragment>
-						<Line />
+						<Line style={{display: lineDisplay, height: `${lineHeight}px`}} />
 						<ElementWrapper>
-							<Scrollbar style={{left: '0px'}}>
-								<Label style={{justifyContent: 'flex-end'}}>{node.leftLabel}</Label>
-							</Scrollbar>
+							<Side left>{node.leftLabel}</Side>
 							<Node type={node.type}/>
-							<Scrollbar style={{right: '0px'}}>
-								<Label>{node.rightLabel}</Label>
-							</Scrollbar>
+							<Side right>{node.rightLabel}</Side>
 						</ElementWrapper>
 					</React.Fragment>
 				)

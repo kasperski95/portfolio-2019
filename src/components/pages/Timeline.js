@@ -6,8 +6,7 @@ import Chain from '../../chain'
 export default class Timeline extends Component {
   render() {
 		const nodes = [
-			{type: 'dots'},
-			{leftLabel: '28.02.19', rightLabel: 'Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor '},
+			{leftLabel: '28.02.19', rightLabel: 'Lorem ipsum'},
 			{leftLabel: '01.03.19', rightLabel: 'Start on the left'},
 			{leftLabel: '02.03.19', rightLabel: 'Start on the right'},
 			{leftLabel: '03.03.19', rightLabel: 'Lorem ipsum dolor'},
@@ -24,7 +23,7 @@ export default class Timeline extends Component {
 		]
 
     return (
-			<Chain>
+			<Chain style={{margin: `2em auto`}}>
 				{{nodes, processes}}
       </Chain>
     )
