@@ -95,7 +95,7 @@ export default class Node extends Component {
           lineOpacity: 1,
           labelOpacity: 0,
           mobileLabelOpacity: 0,
-          iconOpacity: 1,
+          iconOpacity: 0,
           angle: (node.depth > 1)? (this.props.initialAngle || 0) : angle,
           width: this.props.size,
           height: this.props.size
