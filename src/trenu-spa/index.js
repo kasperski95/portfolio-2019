@@ -97,11 +97,13 @@ export default class App extends Component {
           canvasStyle={{backgroundColor: theme.trenu.bg, background: `url(bg-white.png)`, backgroundSize: `30em`}}
           nodeStyle={{backgroundColor: theme.trenu.node.bg, color: theme.trenu.node.text, fontSize: `1.5em`, border: `0.1em solid ${theme.trenu.node.border}`}}
           activeStyle={{backgroundColor: theme.trenu.active.bg, color: theme.trenu.active.text, border: `0.1em solid ${theme.trenu.active.border}`}}
+          emptyNodeStyle={{backgroundColor: theme.trenu.empty.bg, color: theme.trenu.empty.text, border: `0.1em solid ${theme.trenu.empty.border}`}}
           iconStyle={{opacity: 0.8}}
           contentWrapperTheme={theme.trenu.content}
           activeIconStyle={{opacity: 1}}
           labelStyle={{color: theme.trenu.text}}
           lineStyle={{backgroundImage: `linear-gradient(${theme.trenu.active.border}, ${theme.trenu.node.border})`}}
+          lineToEmptyStyle={{backgroundImage: `linear-gradient(${theme.trenu.active.border}, ${theme.trenu.empty.border})`}}
           nodeSize={100}
           lineWidth={2}
           maxLineLength={150}
@@ -154,6 +156,11 @@ const brightTheme = {
     },
     active: {
       bg: palette.gray600,
+      text: palette.white,
+      border: palette.gray500
+    },
+    empty: {
+      bg: palette.gray500,
       text: palette.white,
       border: palette.gray500
     },

@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { Spring, animated, interpolate } from 'react-spring/renderprops'
+import { Spring, animated, interpolate, config } from 'react-spring/renderprops'
 import ContentWrapper from '../atoms/ContentWrapper'
 
 export default class Node extends Component {
+
   injectNodeContent = (node, active) => {
     if (node.userData.content && node === active)
-      return <ContentWrapper theme={this.props.contentWrapperTheme}>{node.userData.content}</ContentWrapper>;
+      return <ContentWrapper ready={!node.transforming} theme={this.props.contentWrapperTheme}>{node.userData.content}</ContentWrapper>;
   }
 
   render() {
@@ -28,6 +29,7 @@ export default class Node extends Component {
     const labelOffset = size + this.props.labelOffset / scale;
     const span = node.expanded? this.props.span : 0;
     const angleDelta = node.children? (2 * Math.PI / node.children.length) : 0;
+    const nodeIsEmpty = (node.children.length === 0 && !node.userData.content);
     const opacityExp = 4; // transition speed
     const opacity = {
       node: (!node.visible && criticalPath.indexOf(node) !== -1)? 0 : 1,
@@ -58,10 +60,13 @@ export default class Node extends Component {
       if (tmpAngle === Math.PI) {labelBottomOffset = labelOffset; labelAlignItems = `bottom`;}   // bottom
     }
 
-    // active node?
-    const customNodeStyle = (this.props.active === node)? {...this.props.nodeStyle, ...this.props.activeStyle} : {...this.props.nodeStyle};
+    // choosing style
+    let customNodeStyle = (this.props.active === node)? {...this.props.nodeStyle, ...this.props.activeStyle} : {...this.props.nodeStyle};
+    if (nodeIsEmpty) customNodeStyle = {...customNodeStyle, ...this.props.emptyNodeStyle};
     let customIconStyle = (this.props.active === node)? {...this.props.iconStyle, ...this.props.activeIconStyle} : {...this.props.iconStyle};
     if (!node.userData.icon) customIconStyle = {...customIconStyle, display: `none`}
+    let lineStyle = this.props.lineStyle; 
+    if (nodeIsEmpty) lineStyle = {...lineStyle, ...this.props.lineToEmptyStyle};
 
     const children = node.expanded || node.transforming? (node.children || []) : [];
     // node -> page
@@ -74,6 +79,9 @@ export default class Node extends Component {
     // angle offset - make sure that the space between top and bottom part of tree is the same
     const angleOffset = (children.length % 2 === 0)? (angleDelta / 2) : (angleDelta / 4);
   
+    // determine cursor type
+    const cursor = (node === this.props.root || nodeIsEmpty)? 'default' : 'pointer';
+
     //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
     return (
@@ -114,7 +122,7 @@ export default class Node extends Component {
               {/* THE LINE */}
               <animated.div style={{            
                   backgroundColor: `black`,
-                  ...this.props.lineStyle,
+                  ...lineStyle,
                   width: `${this.props.lineWidth / scale || 2 / scale}px`,
                   position: `absolute`,
                   top: `0px`,
@@ -133,7 +141,8 @@ export default class Node extends Component {
                 top: interpolate([i.offset, i.angle], (o,a) => `${-Math.cos(-a) * o}px`),
                 left: interpolate([i.offset, i.angle], (o,a) => `${-Math.sin(-a) * o}px`),
                 transform: `translate(-50%, -50%) scale(${scale})`,
-                opacity: i.subtreeOpacity.interpolate(o => `${o**opacityExp}`)
+                opacity: i.subtreeOpacity.interpolate(o => `${o**opacityExp}`),
+                display: i.subtreeOpacity.interpolate(o => {return o>0? `block` : `none`}),
                 }}
                 >
 
@@ -193,6 +202,8 @@ export default class Node extends Component {
                       height: i.height.interpolate(h => `${h}px`),
                       transform: `translate(-50%, -50%) scale(${1/scale})`,
                       opacity: i.nodeOpacity.interpolate(o => `${o**opacityExp}`),
+                      display: i.nodeOpacity.interpolate(o => {return o>0? `flex` : `none`}),
+                      cursor
                     }}
                     onClick={(e) => {if (node.visible && !bActiveLeaf) this.props.onClick(node, e)}}
                     ref={node.ref}

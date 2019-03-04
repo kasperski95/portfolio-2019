@@ -13,8 +13,10 @@ export default class Trenu extends Component {
     activeIconStyle: this.props.activeIconStyle,
     nodeStyle: this.props.nodeStyle,
     activeStyle: this.props.activeStyle,
+    emptyNodeStyle: this.props.emptyNodeStyle,
     lineWidth: this.props.lineWidth || 2,
     lineStyle: this.props.lineStyle,
+    lineToEmptyStyle: this.props.lineToEmptyStyle,
     contentWrapperTheme: this.props.contentWrapperTheme,
     angle: 0
   }
@@ -155,49 +157,51 @@ export default class Trenu extends Component {
   handleClick = (node, e) => {
     let active = this.state.active;
 
-    if (node.parent) {
-      var animate = true;
-      node.transforming = true;
-    }
-    
-    if (node !== this.state.active) {
-      //go deeper
+    if (node.children.length > 0 || node.userData.content) {
+      if (node.parent) {
+        var animate = true;
+        node.transforming = true;
+      }
       
-      //hide all visible nodes except the pressed one
-      this.state.active.children.forEach((value, index, array) => {	
-        if (array[index] !== node) array[index].visible = false;
-      });
-      if (this.state.active !== node)
-        this.state.active.visible = false; 
-      node.expanded = true;
-      node.children.forEach((value, index, array) => {
-        array[index].visible = true;
-      });
+      if (node !== this.state.active) {
+        //go deeper
+        
+        //hide all visible nodes except the pressed one
+        this.state.active.children.forEach((value, index, array) => {	
+          if (array[index] !== node) array[index].visible = false;
+        });
+        if (this.state.active !== node)
+          this.state.active.visible = false; 
+        node.expanded = true;
+        node.children.forEach((value, index, array) => {
+          array[index].visible = true;
+        });
 
-      active = node;
-      this.setState({
-        nodes: this.state.nodes,
-        active,
-        animate
-      })
-      
-    } else if (node.parent) {
-      //go higher
-      node.expanded = false;
-      
-      node.parent.visible = true;
-      node.parent.children.forEach((value, index, array) => {
-        array[index].visible = true;
-      });
+        active = node;
+        this.setState({
+          nodes: this.state.nodes,
+          active,
+          animate
+        })
+        
+      } else if (node.parent) {
+        //go higher
+        node.expanded = false;
+        
+        node.parent.visible = true;
+        node.parent.children.forEach((value, index, array) => {
+          array[index].visible = true;
+        });
 
-      active = node.parent;
-      this.setState({
-        nodes: this.state.nodes,
-        active,
-        animate
-      })
+        active = node.parent;
+        this.setState({
+          nodes: this.state.nodes,
+          active,
+          animate
+        })
+      }
     }
-    
+
     // user action
     if (node.userData.action) {
       node.userData.action(node, active, e);
