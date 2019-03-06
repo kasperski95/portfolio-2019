@@ -67,11 +67,11 @@ export default class Chain extends Component {
 
 	
 	getLine = (props) => 	{
-		const { style, children, ...rest } = props;
+		const { style, children, horizontal, ...rest } = props;
 		let length = props.length || this.config.span - this.config.nodeSize;
 		let width = props.width || this.config.lineWidth;
 
-		if (props.horizontal) {
+		if (horizontal) {
 			let tmp = length;
 			length = width;
 			width = tmp;
@@ -89,15 +89,18 @@ export default class Chain extends Component {
 	}
 
 
-	getNode = (props) => this.generateComponent(props, this.props.nodeRenderer, {
-		width: `${this.config.nodeSize}px`,
-		height: `${this.config.nodeSize}px`,
-		borderRadius: `50%`,
-		boxSizing: `border-box`,
-		boxShadow: `0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)`,
-		backgroundColor: `${props.completed? this.config.theme.palette.secondary.main : this.config.theme.palette.background.paper}`,
-		border: `2px solid ${this.config.theme.palette.secondary.main}`
-	})
+	getNode = (props) => 
+	{	const { completed, ...rest } = props;
+		return this.generateComponent(rest, this.props.nodeRenderer, {
+			width: `${this.config.nodeSize}px`,
+			height: `${this.config.nodeSize}px`,
+			borderRadius: `50%`,
+			boxSizing: `border-box`,
+			boxShadow: `0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)`,
+			backgroundColor: `${props.completed? this.config.theme.palette.secondary.main : this.config.theme.palette.background.paper}`,
+			border: `2px solid ${this.config.theme.palette.secondary.main}`
+		})
+	}
 
 	//------------------------
 	// COMMENT COMPONENT STUFF
@@ -133,7 +136,7 @@ export default class Chain extends Component {
 					<div style={{textAlign: `left`, boxSizing: `border-box`, padding: `1em`}}>
 						<div style={{fontSize: `1.25em`}}>{children.title}</div>
 						<div style={{fontSize: `0.8em`, color: this.config.theme.palette.secondary.main}}>{children.date}</div>
-						<div>{children.description}</div>
+						<div style={{marginTop: `0.2em`}}>{children.description}</div>
 					</div>
 				</Scrollbar>
 			</Card>
@@ -178,7 +181,7 @@ export default class Chain extends Component {
 				<Panel style={{width: `calc(50% - ${this.config.busSize/2}px)`}}>
 					<If condition={this.config.startFromRightSide} then={<Comment style={{height: `${this.config.span}px`}} />} />
 					{this.props.children.map((node, index) => {
-						if (index % 2 == (this.config.startFromRightSide? 1 : 0)) return null;
+						if (index % 2 == (this.config.startFromRightSide? 0 : 1)) return null;
 						return <Comment>{node}</Comment>
 					})}
 				</Panel>
@@ -206,7 +209,7 @@ export default class Chain extends Component {
 				<Panel style={{width: `calc(50% - ${this.config.busSize/2}px)`}}>
 					<If condition={!this.config.startFromRightSide} then={<Comment style={{height: `${this.config.span}px`}} />} />
 					{this.props.children.map((node, index) => {
-						if (index % 2 == (this.config.startFromRightSide? 0 : 1)) return null;
+						if (index % 2 == (this.config.startFromRightSide? 1 : 0)) return null;
 						return <Comment>{node}</Comment>
 					})}
 				</Panel>
