@@ -5,6 +5,7 @@ import Chain from '../../chain'
 
 export default class Timeline extends Component {
   render() {
+		return null;
 		const nodes = [
 			{leftLabel: '28.02.19', rightLabel: 'Lorem ipsum'},
 			{leftLabel: '01.03.19', rightLabel: 'Start on the left'},

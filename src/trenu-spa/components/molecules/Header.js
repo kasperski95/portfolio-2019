@@ -57,7 +57,7 @@ export default class Header extends Component {
 							<animated.div style={{height: `2em`, ...this.props.labelStyle, display: `inline-flex`, alignItems: `center`, overflow: `hidden`,
 								width: i.mix.interpolate(t => `${el.node.labelWidth * (from*(1-t)+to*t)}px`)
 							}}>
-								<animated.div style={{userSelect: `none`, textAlign: `right`, cursor: `pointer`,
+								<animated.div style={{userSelect: `none`, textAlign: `right`, cursor: `${el.active? 'default' : 'pointer'}`,
 									marginLeft: i.mix.interpolate(t => `${-(1-(from*(1-t)+to*t)) * el.node.labelWidth}px`),
 									opacity: i.mix.interpolate(t => `${el.active? 1 : (from*(1-t)+to*t) }`),
 									color: i.mix.interpolate(t => {

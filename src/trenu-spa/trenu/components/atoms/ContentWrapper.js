@@ -3,9 +3,7 @@ import Scrollbar from 'react-scrollbars-custom';
 import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
 export default class ContentWrapper extends Component {
-  render() {
-    console.log(this.props.ready);
-    
+  render() {    
     return (
       <Spring
         native

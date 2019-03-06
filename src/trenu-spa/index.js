@@ -6,32 +6,13 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 
 
-const MuiTheme = createMuiTheme({
-  palette: {
-    primary: {
-      main: blueGrey[600]
-    },
-    secondary: {
-      main: blueGrey[400]
-    },
-    text: {
-      primary: blueGrey[600],
-      secondary: blueGrey[300]
-    }
-  },
-  typography: {
-    useNextVariants: true,
-  },
-});
-
-
-
 export default class App extends Component { 
   state = {
     trenu: React.createRef(),
     headerContent: []
   } 
 
+  
   componentDidMount() {
     const criticalPath = this.state.trenu.current.getCriticalPath().reverse();
     let headerContent = [];
@@ -41,6 +22,27 @@ export default class App extends Component {
     this.setState({headerContent});
   }
 
+  //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  // FUNCTIONALITY
+  getTheme = () => {
+    return this.props.theme? this.props.theme : createMuiTheme({
+      palette: {
+        primary: {
+          main: blueGrey[600]
+        },
+        secondary: {
+          main: blueGrey[400]
+        },
+        text: {
+          primary: blueGrey[600],
+          secondary: blueGrey[300]
+        }
+      },
+      typography: {
+        useNextVariants: true,
+      },
+    });
+  }
 
   //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
   // HANDLERS
@@ -89,11 +91,9 @@ export default class App extends Component {
 
   //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-  render() {    
-    const MuiPalette = MuiTheme.palette;
-
-    console.log(MuiTheme);
-    
+  render() {
+    const MuiTheme = this.getTheme();    
+    const MuiPalette = MuiTheme.palette;    
 
     const theme = {
       bg: MuiPalette.background.default,

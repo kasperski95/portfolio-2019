@@ -1,183 +1,216 @@
 import React, { Component } from 'react'
-import CustomScrollbar from 'react-scrollbars-custom'
-
-
+import Card from '@material-ui/core/Card'
 
 export default class Chain extends Component {
-
-	getProps = () => {
-		return {
-			nodes: this.props.children.nodes || [],
-			processes: this.props.children.processes || [],
-			spacing: this.props.spacing || 100,
-			nodeSize: this.props.nodeSize || 48,
-			lineWidth: this.props.lineWidth || 2
-		}
+	config = {
+		theme: {
+			palette: {
+				background: {
+					paper: '#FFFFFF'
+				},
+				primary: {
+					main: '#00FF00'
+				},
+				secondary: {
+					main: '#0000FF'
+				},
+				text: {
+					main: '#00FFFF'
+				}
+			}
+		},
+		lineWidth: 2,
+		nodeSize: 30,
+		labelOffset: 20,
+		span: 90,
+		busSize: 50,
+		renderFirstLine: true,
+		startFromRightSide: false
 	}
 
+	//———————————————————————————————————————————————————————————————————————————————————————————————————————————————
+	// LIFECYCLE
 
-	//---------------------------------------------------------------------------------------
-	// COMPONENTS
+	constructor(props) {
+		super(props);
+		if (this.props.configure) this.config = this.props.configure(this.config);
+	}
+
+	//———————————————————————————————————————————————————————————————————————————————————————————————————————————————
+	// UTILS
 	
-	getWrapper = (props) => {
+	generateComponent = (props, renderer, defaultStyle) => {
 		const { style, ...rest } = props;
-		props = {...rest, style: {
-			width: `100%`,
-			maxWidth: `40em`,
-			padding: `0em 0.5em`,
-			margin: `0em auto`,
-			...style,
-			...this.props.style,
-		}};
-		
-		return this.props.wrapperRenderer? this.props.wrapperRenderer(props) : <div {...props}/>;
+		props = {...rest,  style: {...defaultStyle, ...style}}
+		return renderer? renderer(props) : <div {...props}/>
 	}
 
 
-	getElementWrapper = (props) => {
-		const { style, ...rest } = props;
-		props = {...rest, style: {
-			height: `${this.getProps().nodeSize}px`,
-			position: `relative`,
-			...style
-		}};
-		
-		return this.props.nodeWrapperRenderer? this.props.nodeWrapperRenderer(props) : <div {...props}/>;
-	}
-
-
-	getLine = (props) => {
-		const { style, ...rest } = props;
-		props = {...rest, style: { 
-			width: `${this.getProps().lineWidth}px`,
-			height: `${this.getProps().spacing}px`,
-			margin: `0em auto`,
-			backgroundColor: `red`,
-			...style,
-		}};
-		
-		return this.props.lineRenderer? this.props.lineRenderer(props) : <div {...props}/>;
-	}
-
-
-	getScrollbar = props => {
-		const { style, ...rest } = props;
-		props = {...rest, style: { ...style,
-			width: `calc(50% - ${this.getProps().nodeSize/2}px)`,
-			height: `calc(${this.getProps().nodeSize + this.getProps().spacing}px - 0.5em)`,
-			position: `absolute`,
-			top: `${this.getProps().nodeSize/2}px`,
-			transform: `translate(0%, -50%)`,
-			overflow: `hidden`
-		}};
-
-		return this.props.scrollbarRenderer? this.props.scrollbarRenderer(props) : <div {...props}/>;
-	}
-
-
-	getLabel = (props) => {
-		if (!props.children) return null;
-
-		const { style, ...rest } = props;
-		props = {...rest, style: { ...style,
-			width: `100%`,
-			minHeight: `100%`,
-			padding: `0em 0.5em`,
-			boxSizing: `border-box`,
-			display: `flex`,
-			alignItems: 'center'			
-		}};
-		
-		return this.props.labelRenderer? this.props.labelRenderer(props) : <div {...props}/>;
-	}
-
-
-	getSide = (props) => {
-		const Scrollbar = (props) => this.getScrollbar(props);
-		const Label = (props) => this.getLabel(props);
-
-		if (props.right && props.children)
-			return <Scrollbar style={{right: '0px'}}>
-				<Label>{props.children}</Label>
-			</Scrollbar>
-
-		if (props.children)
-			return <Scrollbar style={{left: '0px'}}>
-				<Label style={{justifyContent: 'flex-end'}}>{props.children}</Label>
-			</Scrollbar>
-
+	getIf = (props) => {
+		if (props.condition) return props.children || props.then;
+		if (props.else) return props.else;
 		return null;
 	}
 
+	//------------------
+	// ATOMIC COMPONENTS
 
-	getNode = (props) => {
-		const nodeSize = this.getProps().nodeSize;
-		const { style, ...rest } = props;
-		const lineWidth = this.getProps().lineWidth;
+	getWrapper = (props) => this.generateComponent(props, this.props.wrapperRenderer, {
+		display: 'inline-flex',
+		alignItems: 'top'
+	});
 
-		if (props.type === 'dots') {
-			const dotStyle = {
-				backgroundColor: `red`,
-				width: `${lineWidth}px`,
-				height: `${lineWidth}px`,
-				margin: `${(nodeSize - lineWidth * 3)/4}px 0px`,
-				borderRadius: `50%`,
-				transform: `translate(-50%, 0%)`,
-			}
-			props = {...rest, style: { ...style, 
-				width: `0px`,
-				height: `${nodeSize}px`,
-				position: `absolute`,
-				backgroundColor: `rgba(255,0,0,0.1)`,
-				left: `50%`
-			}};
-			return this.props.nodeRenderer? this.props.nodeRenderer(props) : <div {...props}>
-				<div style={dotStyle}></div>
-				<div style={dotStyle}></div>
-				<div style={dotStyle}></div>
-			</div>;
 
-		} else {
-			props = {...rest, style: { ...style,
-				backgroundColor: `rgba(255, 0, 0, 0.1)`,
-				width: `${nodeSize}px`,
-				height: `${nodeSize}px`,
-				position: `absolute`,
-				left: `50%`,
-				transform: `translate(-50%, 0%)`,
-				borderRadius: `50%`,
-			}};
-			return this.props.nodeRenderer? this.props.nodeRenderer(props) : <div {...props}/>;
+	getPanel = (props) => this.generateComponent(props, this.props.panelRenderer, {
+		display: 'inline-block',
+	});
+
+	
+	getLine = (props) => 	{
+		const { style, children, ...rest } = props;
+		let length = props.length || this.config.span - this.config.nodeSize;
+		let width = props.width || this.config.lineWidth;
+
+		if (props.horizontal) {
+			let tmp = length;
+			length = width;
+			width = tmp;
 		}
+
+		props = {...rest, style: {
+			width: `${width}px`,
+			height: `${length}px`,
+			margin: '0 auto',
+			backgroundColor: `${this.config.theme.palette.secondary.main}`,
+			...style}
+		}
+
+		return this.props.lineRenderer? this.props.lineRenderer(props) : <div {...props} />
 	}
 
-	//---------------------------------------------------------------------------------------
+
+	getNode = (props) => this.generateComponent(props, this.props.nodeRenderer, {
+		width: `${this.config.nodeSize}px`,
+		height: `${this.config.nodeSize}px`,
+		borderRadius: `50%`,
+		boxSizing: `border-box`,
+		boxShadow: `0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)`,
+		backgroundColor: `${props.completed? this.config.theme.palette.secondary.main : this.config.theme.palette.background.paper}`,
+		border: `2px solid ${this.config.theme.palette.secondary.main}`
+	})
+
+	//------------------------
+	// COMMENT COMPONENT STUFF
+
+	getCommentWrapper = (props) => this.generateComponent(props, this.props.commentWrapperRenderer, {
+		width: `100%`,
+		height: `${this.config.span * 2}px`,
+		display: 'flex',
+		alignItems: 'center'
+	})
+
+
+	getScrollbar = (props) => this.generateComponent(props, this.props.scrollbarRenderer, {
+		width: `100%`,
+		maxHeight: `${this.config.span * 2}px`,
+		overflowY: `auto`,
+		overflowX: `hidden`
+	})
+
+
+	getNodeContent = (props) => {
+		const { style, children, ...rest } = props;
+		props = {...rest, style: {
+			width: `100%`,
+			...style}
+		}
+		
+		const Scrollbar = props => this.getScrollbar(props);
+
+		return this.props.nodeContentRenderer? this.props.nodeContentRenderer(props) : 
+			<Card {...props}>
+				<Scrollbar>
+					<div style={{textAlign: `left`, boxSizing: `border-box`, padding: `1em`}}>
+						<div style={{fontSize: `1.25em`}}>{children.title}</div>
+						<div style={{fontSize: `0.8em`, color: this.config.theme.palette.secondary.main}}>{children.date}</div>
+						<div>{children.description}</div>
+					</div>
+				</Scrollbar>
+			</Card>
+	}
+
+
+	getComment = (props) => {
+		const { style, children, ...rest } = props;
+		props = {...rest, style: {
+			// defaultStyle
+			...style}
+		}
+
+		const If = props => this.getIf(props);
+		const CommentWrapper = props => this.getCommentWrapper(props);
+		const NodeContent = props => this.getNodeContent(props);
+
+		return this.props.commentRenderer? this.props.commentRenderer(props) :
+			<CommentWrapper {...props}>
+				<If condition={children}>
+					<NodeContent>
+						{children}
+					</NodeContent>
+				</If>
+			</CommentWrapper>
+	}
+
+
+	//———————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 	render() {
-		const Wrapper = (props) => this.getWrapper(props);
-		const ElementWrapper = (props) => this.getElementWrapper(props);
-		const Line = (props) => this.getLine(props);
-		const Side = (props) => this.getSide(props);
-		const Node = (props) => this.getNode(props);
+		const If = props => this.getIf(props);
+		const Wrapper = props => this.getWrapper(props);
+		const Panel = props => this.getPanel(props);
+		const Line = props => this.getLine(props);
+		const Node = props => this.getNode(props);
+		const Comment = props => this.getComment(props);
+		
+		return (
+			<Wrapper style={this.props.style}>
+				{/* LEFT */}
+				<Panel style={{width: `calc(50% - ${this.config.busSize/2}px)`}}>
+					<If condition={this.config.startFromRightSide} then={<Comment style={{height: `${this.config.span}px`}} />} />
+					{this.props.children.map((node, index) => {
+						if (index % 2 == (this.config.startFromRightSide? 1 : 0)) return null;
+						return <Comment>{node}</Comment>
+					})}
+				</Panel>
 
-		const props = this.getProps();
+				{/* BUS */}
+				<Panel style={{width: `${this.config.busSize}px`}}>{
+					this.props.children.map((node, index) => {
+						return <div>
+							{/* LINE */}
+							<If condition={index === 0}
+								then={<Line style={{opacity: (this.config.renderFirstLine && index === 0 || index > 0)? 1 : 0, height: `${this.config.span - this.config.nodeSize/2}px`}} />}
+								else={<Line />}
+							/>
+							{/* NODE + HORIZONTAL LINES */}
+							<div style={{display: `flex`, alignItems: `center`}}>
+								<Line style={{opacity: (index % 2 === (this.config.startFromRightSide? 1 : 0))? 1 : 0}} horizontal length={(this.config.busSize - this.config.nodeSize)/2} />
+								<Node completed={node.completed} />
+								<Line style={{opacity: (index % 2 !== (this.config.startFromRightSide? 1 : 0))? 1 : 0}} horizontal length={(this.config.busSize - this.config.nodeSize)/2} />
+							</div>	
+						</div>
+					})
+				}</Panel>
 
-    return (
-      <Wrapper>{props.nodes.map((node, index) => {
-				const lineDisplay = (index === 0)? 'none' : 'block';
-				const lineHeight = (node.halfLine)? props.spacing : props.spacing/2;
-
-				return (
-					<React.Fragment>
-						<Line style={{display: lineDisplay, height: `${lineHeight}px`}} />
-						<ElementWrapper>
-							<Side left>{node.leftLabel}</Side>
-							<Node type={node.type}/>
-							<Side right>{node.rightLabel}</Side>
-						</ElementWrapper>
-					</React.Fragment>
-				)
-			})}</Wrapper>
-    )
-  }
+				{/* RIGHT */}
+				<Panel style={{width: `calc(50% - ${this.config.busSize/2}px)`}}>
+					<If condition={!this.config.startFromRightSide} then={<Comment style={{height: `${this.config.span}px`}} />} />
+					{this.props.children.map((node, index) => {
+						if (index % 2 == (this.config.startFromRightSide? 0 : 1)) return null;
+						return <Comment>{node}</Comment>
+					})}
+				</Panel>
+			</Wrapper>
+		)
+	}
 }

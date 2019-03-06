@@ -6,7 +6,7 @@ export default class Node extends Component {
 
   injectNodeContent = (node, active) => {
     if (node.userData.content && node === active)
-      return <ContentWrapper ready={!node.transforming} theme={this.props.contentWrapperTheme}>{node.userData.content}</ContentWrapper>;
+      return <ContentWrapper ready={!node.transforming} theme={this.props.contentWrapperTheme}>{node.userData.content(node, () => this.props.onClick(node))}</ContentWrapper>;
   }
 
   render() {
