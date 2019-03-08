@@ -3,7 +3,6 @@ import React from 'react'
 
 export default {
   nodes: [
-    {title: "First contact", date: "2018", description: "", completed: true},
     {title: '"YouTube training"', date: "2018", description: <a href="https://www.youtube.com/watch?v=Ke90Tje7VS0" target="_blank">Crash Course by Mosh</a>, completed: true},
     {title: 'First NPM package', date: "2018", description: <React.Fragment><a href="https://www.npmjs.com/package/kas-scrollable" target="_blank">kas-scrollable</a> - custom scrollbar.</React.Fragment>, completed: true},
     {title: "react-spring", date: "2019", description: "New package learned. Used everywhere in this website.", completed: true},

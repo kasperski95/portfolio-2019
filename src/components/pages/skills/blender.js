@@ -4,7 +4,6 @@ import ImageZoom from 'react-medium-image-zoom'
 
 export default {
   nodes: [
-    {title: "First contact with 3D software", date: "2013", description: "Blender 2.62", completed: true},
     {title: '"YouTube training"', date: "2014", description: "Creating projects based on YouTube tutorials.", completed: true},
     {title: "Portfolio projects", date: "2015", description: <React.Fragment>
       <ImageZoom
