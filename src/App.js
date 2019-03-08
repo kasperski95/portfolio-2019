@@ -52,7 +52,7 @@ export default class App extends Component {
                 {label: "V-RAY", icon: "/icons/v-ray.png"},
               ]},
               {label: "WEB DEVELOPMENT", icon: "/icons/web.png", children: [
-                {label: "GIT", icon: "/icons/git.png"},
+                {label: "GITHUB", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},
                 {label: "REACT", icon: "/icons/react.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.react} theme={theme}/>},
                 {label: "JAVASCRIPT ES6+", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},
                 {label: "REDUX", icon: "/icons/redux.png"},
@@ -61,8 +61,8 @@ export default class App extends Component {
               ]},
               {label: "PROGRAMMING", icon: "/icons/code.png", children: [
                 {label: "SHELL", icon: "/icons/shebang.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.shell} theme={theme}/>},
-                {label: "MISC", icon: "/icons/misc.png"},
-                {label: "GIT", icon: "/icons/git.png"},
+                {label: "MISC", icon: "/icons/misc.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.programmingMisc} theme={theme}/>},
+                {label: "GITHUB", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},
                 {label: "MICROCONTROLLERS", icon: "/icons/mcu.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.mcu} theme={theme}/>},
                 {label: "C/C++", icon: "/icons/c++.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.cpp} theme={theme}/>},
                 {label: "JAVASCRIPT ES6+", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},

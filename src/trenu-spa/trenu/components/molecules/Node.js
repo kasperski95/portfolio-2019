@@ -29,7 +29,7 @@ export default class Node extends Component {
     const labelOffset = size + this.props.labelOffset / scale;
     const span = node.expanded? this.props.span : 0;
     const angleDelta = node.children? (2 * Math.PI / node.children.length) : 0;
-    const nodeIsEmpty = (node.children.length === 0 && !node.userData.content);
+    const nodeIsEmpty = (node.children.length === 0 && !node.userData.content && !node.userData.action);
     const opacityExp = 4; // transition speed
     const opacity = {
       node: (!node.visible && criticalPath.indexOf(node) !== -1)? 0 : 1,
