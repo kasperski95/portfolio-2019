@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Spring, animated, interpolate, config } from 'react-spring/renderprops'
+import { Spring, animated, interpolate } from 'react-spring/renderprops'
 import ContentWrapper from '../atoms/ContentWrapper'
 
 export default class Node extends Component {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import Scrollbar from 'react-scrollbars-custom';
-import { Spring, animated, interpolate } from 'react-spring/renderprops'
+//import Scrollbar from 'react-scrollbars-custom';
+//import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
 export default class ContentWrapper extends Component {
   render() {    

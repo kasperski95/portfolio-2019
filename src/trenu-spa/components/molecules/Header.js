@@ -44,7 +44,7 @@ export default class Header extends Component {
 					const to = el.collapsing? 0 : 1;
 
 					return (
-						<span style={{display: `inline-flex`, alignItems: `center`}}>
+						<span key={`labelElement-${index}`} style={{display: `inline-flex`, alignItems: `center`}}>
 
 							{/* LINE */}
 							<animated.div style={{ ...this.props.labelStyle, userSelect: `none`, display, alignItems: `center`, justifyContent: `center`, overflow: `hidden`,

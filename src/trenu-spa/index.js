@@ -17,7 +17,7 @@ export default class App extends Component {
     const criticalPath = this.state.trenu.current.getCriticalPath().reverse();
     let headerContent = [];
     criticalPath.forEach((node, index) => {
-      headerContent.push({node, expanding: false, collapsing: false, active: index == criticalPath.length - 1});
+      headerContent.push({node, expanding: false, collapsing: false, active: index === criticalPath.length - 1});
     })
     this.setState({headerContent});
   }

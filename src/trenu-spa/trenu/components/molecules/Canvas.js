@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Spring, animated, interpolate, config } from 'react-spring/renderprops'
+import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
 export default class Canvas extends Component {
   render() {

@@ -183,7 +183,7 @@ export default class Chain extends Component {
 				<Panel style={{width: `calc(50% - ${this.config.busSize/2}px)`}}>
 					<If condition={this.config.startFromRightSide} then={<Comment style={{height: `${this.config.span}px`}} />} />
 					{this.props.children.map((node, index) => {
-						if (index % 2 == (this.config.startFromRightSide? 0 : 1)) return null;
+						if (index % 2 === (this.config.startFromRightSide? 0 : 1)) return null;
 						return <Comment>{node}</Comment>
 					})}
 				</Panel>
@@ -194,7 +194,7 @@ export default class Chain extends Component {
 						return <div>
 							{/* LINE */}
 							<If condition={index === 0}
-								then={<Line style={{opacity: (this.config.renderFirstLine && index === 0 || index > 0)? 1 : 0, height: `${this.config.span - this.config.nodeSize/2}px`}} />}
+								then={<Line style={{opacity: ((this.config.renderFirstLine && index === 0) || index > 0)? 1 : 0, height: `${this.config.span - this.config.nodeSize/2}px`}} />}
 								else={<Line />}
 							/>
 							{/* NODE + HORIZONTAL LINES */}
@@ -211,7 +211,7 @@ export default class Chain extends Component {
 				<Panel style={{width: `calc(50% - ${this.config.busSize/2}px)`}}>
 					<If condition={!this.config.startFromRightSide} then={<Comment style={{height: `${this.config.span}px`}} />} />
 					{this.props.children.map((node, index) => {
-						if (index % 2 == (this.config.startFromRightSide? 1 : 0)) return null;
+						if (index % 2 === (this.config.startFromRightSide? 1 : 0)) return null;
 						return <Comment>{node}</Comment>
 					})}
 				</Panel>
