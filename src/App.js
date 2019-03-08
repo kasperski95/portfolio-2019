@@ -4,22 +4,25 @@ import Timeline from './components/pages/Timeline'
 import Contact from './components/pages/Contact'
 import Skill from './components/templates/Skill'
 import skills from './components/pages/skills'
-import blueGrey from '@material-ui/core/colors/blueGrey'
+import color from '@material-ui/core/colors/lightBlue'
+import Color from 'color'
 import { createMuiTheme } from '@material-ui/core/styles'
 
 
+const saturation = -0.65;
+const hue = 215;
 
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: blueGrey[600]
+      main: Color(color[600]).saturate(saturation).hue(hue).hex()
     },
     secondary: {
-      main: blueGrey[200]
+      main: Color(color[200]).saturate(saturation).hue(hue).hex()
     },
     text: {
-      primary: blueGrey[900],
-      secondary: blueGrey[500]
+      primary: '#000000',
+      secondary: Color(color[500]).saturate(saturation).hue(hue).hex()
     }
   },
   typography: {

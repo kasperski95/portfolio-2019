@@ -61,7 +61,7 @@ export default class Header extends Component {
 									marginLeft: i.mix.interpolate(t => `${-(1-(from*(1-t)+to*t)) * el.node.labelWidth}px`),
 									opacity: i.mix.interpolate(t => `${el.active? 1 : (from*(1-t)+to*t) }`),
 									color: i.mix.interpolate(t => {
-										const mix = el.active? 1 : 0;
+										const mix = (el.active)? 1 : 0;
 										return Color(this.props.labelStyle.color).mix(Color(this.props.activeLabelStyle.color), mix);
 									})
 								}}
