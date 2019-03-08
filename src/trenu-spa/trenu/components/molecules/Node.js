@@ -82,6 +82,8 @@ export default class Node extends Component {
     // determine cursor type
     const cursor = (node === this.props.root || nodeIsEmpty)? 'default' : 'pointer';
 
+    // determine label
+    const label = (this.props.mobileMode && node.userData.mobileLabel)? node.userData.mobileLabel : node.userData.label;
     //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
     return (
@@ -178,7 +180,7 @@ export default class Node extends Component {
                     transform: `scale(${1/scale})`,
                     opacity: i.labelOpacity.interpolate(o => `${o**opacityExp}`)
                   }}>
-                    <span style={{whiteSpace: `nowrap`, fontSize: `${1/scale}em`}}>{node.userData.label}</span>
+                    <span style={{whiteSpace: `nowrap`, fontSize: `${1/scale}em`}}>{label}</span>
                   </animated.div>
 
                   {/* MOBILE LABEL */}
@@ -191,7 +193,7 @@ export default class Node extends Component {
                     justifyContent: `center`,
                     opacity: i.mobileLabelOpacity.interpolate(o => `${o**opacityExp}`)
                   }}>
-                    <span style={{width: `${size/scale}px`, overflowWrap: `break-word`, fontSize: `${1/scale}em`}}>{node.userData.label}</span>
+                    <span style={{width: `${size/scale}px`, whiteSpace: `nowrap`, overflowWrap: `break-word`, fontSize: `${1/scale}em`}}>{label}</span>
                   </animated.div>
 
                   {/* THE NODE */}

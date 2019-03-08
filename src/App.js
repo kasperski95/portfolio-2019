@@ -46,26 +46,26 @@ export default class App extends Component {
             {label: "SKILLS", icon: "/icons/tools.png", children: [
               {label: "ARTISTIC", icon: "/icons/bulb.png", children: [
                 {label: "BLENDER", icon: "/icons/blender.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.blender} theme={theme}/>},
-                {label: "AFFINITY PHOTO", icon: "/icons/affinity-photo.png"},
-                {label: "AFFINITY DESIGNER", icon: "/icons/affinity-designer.png"},
-                {label: "UNREAL ENGINE 4", icon: "/icons/ue4.png"},
-                {label: "V-RAY", icon: "/icons/v-ray.png"},
+                {label: "AFFINITY PHOTO", mobileLabel: "A. PHOTO", icon: "/icons/affinity-photo.png"},
+                {label: "AFFINITY DESIGNER", mobileLabel: "A. DESIGNER", icon: "/icons/affinity-designer.png"},
+                {label: "UNREAL ENGINE 4", mobileLabel: "UE4", icon: "/icons/ue4.png"},
+                {label: "V‑RAY", icon: "/icons/v-ray.png"},
               ]},
-              {label: "WEB DEVELOPMENT", icon: "/icons/web.png", children: [
+              {label: "WEB DEVELOPMENT", mobileLabel: "WEB", icon: "/icons/web.png", children: [
                 {label: "GITHUB", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},
+                {label: "JAVASCRIPT ES6+", mobileLabel: "JS", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},
                 {label: "REACT", icon: "/icons/react.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.react} theme={theme}/>},
-                {label: "JAVASCRIPT ES6+", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},
-                {label: "REDUX", icon: "/icons/redux.png"},
-                {label: "CSS", icon: "/icons/css.png"},    
-                {label: "MISC", icon: "/icons/misc.png"}
+                {label: "REDUX", icon: "/icons/redux.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.redux} theme={theme}/>},
+                {label: "CSS", icon: "/icons/css.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.css} theme={theme}/>},
+                {label: "MISC", icon: "/icons/misc.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.webMisc} theme={theme}/>}
               ]},
-              {label: "PROGRAMMING", icon: "/icons/code.png", children: [
-                {label: "SHELL", icon: "/icons/shebang.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.shell} theme={theme}/>},
-                {label: "MISC", icon: "/icons/misc.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.programmingMisc} theme={theme}/>},
+              {label: "PROGRAMMING", mobileLabel: "CODING", icon: "/icons/code.png", children: [
                 {label: "GITHUB", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},
-                {label: "MICROCONTROLLERS", icon: "/icons/mcu.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.mcu} theme={theme}/>},
+                {label: "JAVASCRIPT ES6+", mobileLabel: "JS", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},
+                {label: "SHELL", icon: "/icons/shebang.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.shell} theme={theme}/>},
+                {label: "MICROCONTROLLERS", mobileLabel: "MCU", icon: "/icons/mcu.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.mcu} theme={theme}/>},
                 {label: "C/C++", icon: "/icons/c++.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.cpp} theme={theme}/>},
-                {label: "JAVASCRIPT ES6+", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},
+                {label: "MISC", icon: "/icons/misc.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.programmingMisc} theme={theme}/>},
               ]}            
             ]}
           ]

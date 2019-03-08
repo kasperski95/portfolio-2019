@@ -115,8 +115,8 @@ export default class App extends Component {
         text: MuiPalette.secondary.main,
         border: MuiPalette.primary.light,
         scrollbar: {
-          track: MuiPalette.background.default,
-          thumb: MuiPalette.background.paper
+          track: MuiPalette.primary.light,
+          thumb: MuiPalette.secondary.light,
         }
       },
     
