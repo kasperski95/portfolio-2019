@@ -57,10 +57,10 @@ export default class App extends Component {
                 {label: "MISC", icon: "/icons/misc.png"}
               ]},
               {label: "PROGRAMMING", icon: "/icons/code.png", children: [
-                {active: true, label: "SHELL", icon: "/icons/shebang.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.shell} theme={theme}/>},
+                {label: "SHELL", icon: "/icons/shebang.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.shell} theme={theme}/>},
                 {label: "MISC", icon: "/icons/misc.png"},
                 {label: "GIT", icon: "/icons/git.png"},
-                {label: "MICROCONTROLLERS", icon: "/icons/mcu.png"},
+                {label: "MICROCONTROLLERS", icon: "/icons/mcu.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.mcu} theme={theme}/>},
                 {label: "C/C++", icon: "/icons/c++.png"},
                 {label: "JAVASCRIPT ES6+", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},
               ]}            
