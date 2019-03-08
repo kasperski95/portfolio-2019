@@ -98,14 +98,25 @@ export default class App extends Component {
     const theme = {
       bg: MuiPalette.background.default,
     
+      // header: {
+      //   bg: MuiPalette.background.paper,
+      //   activeText: MuiPalette.text.primary,
+      //   text: MuiPalette.text.secondary,
+      //   border: MuiPalette.divider,
+      //   scrollbar: {
+      //     track: MuiPalette.secondary.main,
+      //     thumb: MuiPalette.primary.main
+      //   }
+      // },
+
       header: {
-        bg: MuiPalette.background.paper,
-        activeText: MuiPalette.text.primary,
-        text: MuiPalette.text.secondary,
+        bg: MuiPalette.primary.main,
+        activeText: MuiPalette.background.paper,
+        text: MuiPalette.secondary.main,
         border: MuiPalette.divider,
         scrollbar: {
-          track: MuiPalette.secondary.main,
-          thumb: MuiPalette.primary.main
+          track: MuiPalette.background.default,
+          thumb: MuiPalette.background.paper
         }
       },
     
@@ -157,7 +168,7 @@ export default class App extends Component {
 
           <Trenu
             ref={this.state.trenu}
-            style={{width: `100%`, height: `100%`, paddingTop: `4em`, boxSizing: `border-box`}}
+            style={{width: `100%`, height: `100%`, paddingTop: `3.6em`, boxSizing: `border-box`}}
             canvasStyle={{backgroundColor: theme.trenu.bg, background: `url(bg-white.png)`, backgroundSize: `30em`}}
             nodeStyle={{backgroundColor: theme.trenu.node.bg, color: theme.trenu.node.text, fontSize: `1.5em`, border: `0.1em solid ${theme.trenu.node.border}`,
             //boxShadow: `0px 6px 6px -3px rgba(0,0,0,${0.2 * headerShadowStrength}),0px 10px 14px 1px rgba(0,0,0,${0.14 * headerShadowStrength}),0px 4px 18px 3px rgba(0,0,0,${0.12 * headerShadowStrength})`

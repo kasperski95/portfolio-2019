@@ -9,7 +9,7 @@ import Color from 'color'
 import { createMuiTheme } from '@material-ui/core/styles'
 
 
-const saturation = -0.65;
+const saturation = -0.7;
 const hue = 215;
 
 const theme = createMuiTheme({

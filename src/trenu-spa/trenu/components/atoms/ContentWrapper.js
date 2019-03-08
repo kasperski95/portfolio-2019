@@ -14,7 +14,7 @@ export default class ContentWrapper extends Component {
         return (<div style={{
           width: `100%`,
           height: `100%`,
-          overflowY: 'auto',   
+          overflowY: 'auto', 
           backgroundColor: this.props.theme.bg,
           color: this.props.theme.text  
           }}

@@ -27,7 +27,7 @@ export default class Header extends Component {
 					return <animated.div
 						{...restProps} 
 						ref={elementRef}
-						style={{...style, paddingTop: `0.75em`, textAlign: `center`, ...this.props.scrollbarContentStyle}}
+						style={{...style, paddingTop: `0.55em`, textAlign: `center`, ...this.props.scrollbarContentStyle}}
 						scrollLeft={i.mix.interpolate(m => {
 							return 9999999999 /* just scroll Right */
 					})}/>
@@ -81,7 +81,7 @@ export default class Header extends Component {
 const style = {
 	boxSizing: `border-box`,
 	width: `100%`,
-	height: `4em`,
+	height: `3.6em`,
 	padding: `0.25em 8px`,
 	color: `white`,
 	position: `absolute`,
