@@ -215,7 +215,8 @@ export default class Trenu extends Component {
 
   handleCollapsingComplete = (node) => {
     node.transforming = false;
-    this.setState((prevState) => ({nodes: prevState.nodes}));
+    // update not necessary
+    //this.setState((prevState) => ({nodes: prevState.nodes}));
   }
 
 

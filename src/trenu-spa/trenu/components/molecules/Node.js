@@ -115,7 +115,7 @@ export default class Node extends Component {
           height
         }}
         onRest={() => {
-          if (this.props.onCollapsingComplete && node.transforming) this.props.onCollapsingComplete(node)
+          if (this.props.onCollapsingComplete && node.transforming) this.props.onCollapsingComplete(node) //FIXME: unnecessary refresh
         }}
         >{i => { // i(nterpolated props)
 
@@ -205,6 +205,7 @@ export default class Node extends Component {
                       transform: `translate(-50%, -50%) scale(${1/scale})`,
                       opacity: i.nodeOpacity.interpolate(o => `${o**opacityExp}`),
                       display: i.nodeOpacity.interpolate(o => {return o>0? `flex` : `none`}),
+                      overflow: `hidden`,
                       cursor
                     }}
                     onClick={(e) => {if (node.visible && !bActiveLeaf) this.props.onClick(node, e)}}

@@ -46,10 +46,10 @@ export default class App extends Component {
             {label: "SKILLS", icon: "/icons/tools.png", children: [
               {label: "ARTISTIC", icon: "/icons/bulb.png", children: [
                 {label: "BLENDER", icon: "/icons/blender.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.blender} theme={theme}/>},
-                {label: "AFFINITY PHOTO", mobileLabel: "A. PHOTO", icon: "/icons/affinity-photo.png"},
+                {label: "AFFINITY PHOTO", mobileLabel: "A. PHOTO", icon: "/icons/affinity-photo.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.photo} theme={theme}/>},
                 {label: "AFFINITY DESIGNER", mobileLabel: "A. DESIGNER", icon: "/icons/affinity-designer.png"},
-                {label: "UNREAL ENGINE 4", mobileLabel: "UE4", icon: "/icons/ue4.png"},
-                {label: "V‑RAY", icon: "/icons/v-ray.png"},
+                {label: "UNREAL ENGINE 4", mobileLabel: "UE4", icon: "/icons/ue4.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.ue4} theme={theme}/>},
+                {label: "MISC", icon: "/icons/misc.png"},
               ]},
               {label: "WEB DEVELOPMENT", mobileLabel: "WEB", icon: "/icons/web.png", children: [
                 {label: "GITHUB", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},

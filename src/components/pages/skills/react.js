@@ -12,6 +12,5 @@ export default {
     {title: "This website", date: "2019", description: "", completed: true},
     {title: "react hooks", date: "2019", description: "", completed: false},
     {title: "RTFM", date: "2019", description: "", completed: false},
-    {title: "Learn interview questions", date: "2019", description: "", completed: false},
   ]
 }

@@ -25,6 +25,7 @@ export default class Chain extends Component {
 		nodeSize: 30,
 		labelOffset: 20,
 		span: 90,
+		margin: 8,
 		busSize: 50,
 		renderFirstLine: true,
 		startFromRightSide: false
@@ -117,7 +118,7 @@ export default class Chain extends Component {
 
 	getScrollbar = (props) => this.generateComponent(props, this.props.scrollbarRenderer, {
 		width: `100%`,
-		maxHeight: `${this.config.span * 2}px`,
+		maxHeight: `${this.config.span * 2 - this.config.margin}px`,
 		overflowY: `auto`,
 		overflowX: `hidden`
 	})
