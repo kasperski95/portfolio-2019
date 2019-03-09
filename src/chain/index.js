@@ -185,14 +185,14 @@ export default class Chain extends Component {
 					<If condition={this.config.startFromRightSide} then={<Comment style={{height: `${this.config.span}px`}} />} />
 					{this.props.children.map((node, index) => {
 						if (index % 2 === (this.config.startFromRightSide? 0 : 1)) return null;
-						return <Comment>{node}</Comment>
+						return <Comment key={`chain-left-comment-${index}`}>{node}</Comment>
 					})}
 				</Panel>
 
 				{/* BUS */}
 				<Panel style={{width: `${this.config.busSize}px`}}>{
 					this.props.children.map((node, index) => {
-						return <div>
+						return <div key={`chain-node-${index}`}>
 							{/* LINE */}
 							<If condition={index === 0}
 								then={<Line style={{opacity: ((this.config.renderFirstLine && index === 0) || index > 0)? 1 : 0, height: `${this.config.span - this.config.nodeSize/2}px`}} />}
@@ -213,7 +213,7 @@ export default class Chain extends Component {
 					<If condition={!this.config.startFromRightSide} then={<Comment style={{height: `${this.config.span}px`}} />} />
 					{this.props.children.map((node, index) => {
 						if (index % 2 === (this.config.startFromRightSide? 1 : 0)) return null;
-						return <Comment>{node}</Comment>
+						return <Comment key={`chain-right-comment-${index}`}>{node}</Comment>
 					})}
 				</Panel>
 			</Wrapper>

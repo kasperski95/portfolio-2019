@@ -3,6 +3,11 @@ import React, { Component } from 'react'
 //import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
 export default class ContentWrapper extends Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    return false;
+  }
+
+  
   render() {    
     //return (
       // <Spring

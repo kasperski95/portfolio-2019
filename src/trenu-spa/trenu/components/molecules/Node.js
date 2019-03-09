@@ -73,7 +73,7 @@ export default class Node extends Component {
     let width = size;
     let height = size;
     if (children.length === 0 && node === this.props.active) {
-      height = width = Math.sqrt(this.props.wrapper.width**2 + this.props.wrapper.height**2); 
+      height = width = Math.sqrt(this.props.wrapper.width**2 + this.props.wrapper.height**2) / scale; 
     }
 
     // angle offset - make sure that the space between top and bottom part of tree is the same
@@ -85,6 +85,7 @@ export default class Node extends Component {
     // determine label
     const label = (this.props.mobileMode && node.userData.mobileLabel)? node.userData.mobileLabel : node.userData.label;
     //———————————————————————————————————————————————————————————————————————————————————————————————————————————————
+    
 
     return (
       <Spring
@@ -115,7 +116,7 @@ export default class Node extends Component {
           height
         }}
         onRest={() => {
-          if (this.props.onCollapsingComplete && node.transforming) this.props.onCollapsingComplete(node) //FIXME: unnecessary refresh
+          if (this.props.onCollapsingComplete && node.transforming) this.props.onCollapsingComplete(node)
         }}
         >{i => { // i(nterpolated props)
 
@@ -255,7 +256,7 @@ export default class Node extends Component {
                       width: `${this.props.wrapper.width}px`,
                       height: `${this.props.wrapper.height}px`,
                       opacity: i.iconOpacity.interpolate(o => `${(1-o)**opacityExp}`),
-                      transform: `scale(1/${scale})`
+                      //transform: `scale(${1/scale})`
                     }}>
                       {this.injectNodeContent(node, this.props.active)}
                     </animated.div>

@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import TrenuSpa from './trenu-spa'
-import Timeline from './components/pages/Timeline'
+import timeline from './components/pages/timeline.js'
 import Contact from './components/pages/Contact'
 import Skill from './components/templates/Skill'
-import skills from './components/pages/skills'
+import skills from './components/pages/skills/index.js'
 import color from '@material-ui/core/colors/lightBlue'
 import Color from 'color'
 import { createMuiTheme } from '@material-ui/core/styles'
@@ -41,18 +41,18 @@ export default class App extends Component {
           label: <React.Fragment>ARKADIUSZ <span style={{fontWeight: `bold`}}>KASPRZYK</span></React.Fragment>,
           icon: "/icons/person.png",
           children: [
-            {label: "TIMELINE", icon: "/icons/timeline.png", content: node => <Timeline node={node} />},
+            {label: "TIMELINE", icon: "/icons/timeline.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={timeline} theme={theme}/>},
             {label: "CONTACT", icon: "/icons/contact.png", content: node => <Contact node={node} theme={theme}/>},
             {label: "SKILLS", icon: "/icons/tools.png", children: [
               {label: "ARTISTIC", icon: "/icons/bulb.png", children: [
                 {label: "BLENDER", icon: "/icons/blender.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.blender} theme={theme}/>},
                 {label: "AFFINITY PHOTO", mobileLabel: "A. PHOTO", icon: "/icons/affinity-photo.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.photo} theme={theme}/>},
-                {label: "AFFINITY DESIGNER", mobileLabel: "A. DESIGNER", icon: "/icons/affinity-designer.png"},
+                {label: "AFFINITY DESIGNER", mobileLabel: "A. DESIGNER", icon: "/icons/affinity-designer.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.designer} theme={theme}/>},
                 {label: "UNREAL ENGINE 4", mobileLabel: "UE4", icon: "/icons/ue4.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.ue4} theme={theme}/>},
-                {label: "MISC", icon: "/icons/misc.png"},
+                {label: "MISC", icon: "/icons/misc.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.artisticMisc} theme={theme}/>},
               ]},
               {label: "WEB DEVELOPMENT", mobileLabel: "WEB", icon: "/icons/web.png", children: [
-                {label: "GITHUB", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},
+                {label: "GITHUB.COM", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},
                 {label: "JAVASCRIPT ES6+", mobileLabel: "JS", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},
                 {label: "REACT", icon: "/icons/react.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.react} theme={theme}/>},
                 {label: "REDUX", icon: "/icons/redux.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.redux} theme={theme}/>},
@@ -60,7 +60,7 @@ export default class App extends Component {
                 {label: "MISC", icon: "/icons/misc.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.webMisc} theme={theme}/>}
               ]},
               {label: "PROGRAMMING", mobileLabel: "CODING", icon: "/icons/code.png", children: [
-                {label: "GITHUB", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},
+                {label: "GITHUB.COM", preventDefault: true, icon: "/icons/git.png", action: (node, active, e) => {window.open('https://github.com/kasperski95/', '_blank');}},
                 {label: "JAVASCRIPT ES6+", mobileLabel: "JS", icon: "/icons/js.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.js} theme={theme}/>},
                 {label: "SHELL", icon: "/icons/shebang.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.shell} theme={theme}/>},
                 {label: "MICROCONTROLLERS", mobileLabel: "MCU", icon: "/icons/mcu.png", content: (node, onNodeClick) => <Skill node={node} onNodeClick={onNodeClick} children={skills.mcu} theme={theme}/>},

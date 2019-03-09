@@ -2,10 +2,15 @@ import React, { Component } from 'react'
 import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
 export default class Canvas extends Component {
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   return !nextProps.focusOn.userData.content;
+  // }
+  
   render() {
     const focused = this.props.focusOn;
     const scaling = this.props.scaling;
-    const scale = 1 / scaling**focused.depth;
+    const depth = focused.depth;
+    const scale = 1 / scaling**depth;
     let x = 0;
     let y = 0;
 

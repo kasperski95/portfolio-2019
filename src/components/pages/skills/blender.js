@@ -10,7 +10,7 @@ export default {
         image={{
           src: "/img/visualization-of-block-of-flats-820.jpg",
           className: 'img',
-          style: { width: '50%' }
+          style: { height: '89px' }
         }}
         zoomImage={{
           src: "/img/visualization-of-block-of-flats-1920.jpg",
@@ -20,7 +20,7 @@ export default {
         image={{
           src: "/img/visualization-of-kitchen-820.jpg",
           className: 'img',
-          style: { width: '50%' }
+          style: { height: '89px' }
         }}
         zoomImage={{
           src: "/img/visualization-of-kitchen-1920.jpg",
@@ -34,14 +34,14 @@ export default {
         image={{
           src: "/img/Front_Door_02.gif",
           className: 'img',
-          style: { width: '50%' }
+          style: { height: '89px' }
         }}
       />
       <ImageZoom
         image={{
           src: "/img/Dish_Drainer_01-1.jpg",
           className: 'img',
-          style: { width: '50%' }
+          style: { height: '89px' }
         }}
       />
     </React.Fragment>, completed: true},

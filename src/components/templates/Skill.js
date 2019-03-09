@@ -14,16 +14,28 @@ export default class Skill extends Component {
             backgroundColor: theme.palette.primary.main,
             borderRadius: `50%`,
             margin: `0em auto`,
-            backgroundImage: `url(${this.props.node.userData.icon})`,
-            backgroundSize: `50%`,
-            backgroundPosition: `center center`,
-            backgroundRepeat: `no-repeat`,
+            display: `flex`,
+            alignItems: `center`,
+            justifyContent: `center`,
+            //backgroundImage: `url(${this.props.node.userData.icon})`,
+            // backgroundSize: `50%`,
+            // backgroundPosition: `center center`,
+            // backgroundRepeat: `no-repeat`,
             border: `3px solid ${theme.palette.primary.light}`,
             boxSizing: `border-box`,
             cursor: `pointer`,
             boxShadow: `0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)`
           }}
-        />
+        >
+          <div style={{
+            width: `50%`,
+            height: `50%`,
+            backgroundImage: `url(${this.props.node.userData.icon})`,
+            backgroundSize: `contain`,
+            backgroundPosition: `center center`,
+            backgroundRepeat: `no-repeat`,
+          }}/>
+        </div>
         <Chain style={{maxWidth: '50em', width: '100%'}} configure={config => ({...config, theme: this.props.theme})}>
           {this.props.children.nodes}
         </Chain>
