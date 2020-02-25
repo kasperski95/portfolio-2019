@@ -3,4 +3,4 @@
 http://arkadiuszkasprzyk.pl/
 
 ## Example
-[Demonstration](documentation/demo.gif)
+![Demonstration](documentation/demo.gif)
